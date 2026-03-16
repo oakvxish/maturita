@@ -151,11 +151,11 @@
 
   .hero-img-placeholder {
     width: 100%; height: 100%; min-height: 400px;
-    background: linear-gradient(135deg, #e8d5b0 0%, #d4b896 30%, #c9a99a 60%, #b58b7a 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(5rem,12vw,10rem); color: rgba(255,255,255,0.25);
-    font-weight: 300; font-style: italic;
+    position: relative;
+  }
+  .hero-img-placeholder img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block;
   }
 
   .hero-badge {
@@ -221,20 +221,23 @@
   .about { display: grid; grid-template-columns: 1fr 1fr; min-height: 60vh; }
 
   .about-img {
-    background: linear-gradient(180deg, #c9a99a 0%, #8b6355 100%);
     position: relative; overflow: hidden;
-    display: flex; align-items: center; justify-content: center; min-height: 360px;
+    display: flex; align-items: flex-end; min-height: 360px;
   }
-  .about-img-inner {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(6rem,15vw,12rem); color: rgba(255,255,255,0.12);
-    font-weight: 300; font-style: italic; user-select: none;
+  .about-img img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+  }
+  .about-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(28,25,23,0.55) 0%, rgba(28,25,23,0.1) 60%, transparent 100%);
   }
   .about-img-quote {
-    position: absolute; bottom: 32px; left: 32px; right: 32px;
+    position: relative; z-index: 2;
+    padding: 32px;
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(1rem,2vw,1.35rem); font-style: italic; font-weight: 300;
-    color: rgba(255,255,255,0.9); line-height: 1.5;
+    color: rgba(255,255,255,0.95); line-height: 1.5;
   }
 
   .about-text {
@@ -466,7 +469,9 @@
     </div>
   </div>
   <div class="hero-right">
-    <div class="hero-img-placeholder">L</div>
+    <div class="hero-img-placeholder">
+      <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80&fit=crop" alt="Salone di bellezza Lumière">
+    </div>
     <div class="hero-badge">
       <span>clienti soddisfatte</span>
       <strong>2.400+</strong>
@@ -511,7 +516,7 @@
 <!-- ABOUT -->
 <section class="about" id="about">
   <div class="about-img">
-    <div class="about-img-inner">L</div>
+    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80&fit=crop" alt="Interno salone Lumière">
     <div class="about-img-quote">"La cura di sé non è un lusso,<br>è una necessità dell'anima."</div>
   </div>
   <div class="about-text">
@@ -668,18 +673,18 @@
     <h4>contatti</h4>
     <p>Via delle Rose 14<br>20121 Milano MI</p>
     <br>
-    <p>02 1234 5678<br>info@lumiere-salone.it</p>
+    <p>02 1234 5678<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdd4d3dbd2fdd1c8d0d4d8cfd890cedcd1d2d3d893d4c9">[email&#160;protected]</a></p>
     <br>
     <p>Mar – Sab<br>9:00 – 19:00</p>
   </div>
 </footer>
 
 <div class="footer-bottom">
-  <p>© 2024 Lumière Salone di Bellezza · P.IVA 12345678901</p>
+  <p>© 2026 Lumière Salone di Bellezza · P.IVA 12345678901</p>
   <a href="index.php">accesso gestionale →</a>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   const nav       = document.getElementById('nav');
   const burger    = document.getElementById('burger');
   const navMobile = document.getElementById('navMobile');
@@ -691,15 +696,4 @@
   burger.addEventListener('click', () => {
     const aperto = burger.classList.toggle('aperto');
     navMobile.classList.toggle('aperto', aperto);
-    document.body.style.overflow = aperto ? 'hidden' : '';
-  });
-
-  function chiudiMenu() {
-    burger.classList.remove('aperto');
-    navMobile.classList.remove('aperto');
-    document.body.style.overflow = '';
-  }
-</script>
-
-</body>
-</html>
+    document.body.st
