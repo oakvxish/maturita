@@ -1,7 +1,4 @@
 <?php
-// layout_top.php — incluso da ogni pagina admin dopo require 'db.php' e require 'auth.php'
-// $sid è già impostato da auth.php
-
 $tema = 'chiaro';
 if (isset($conn) && isset($sid)) {
     $r = $conn->query("SELECT valore FROM impostazioni WHERE chiave='tema' AND salone_id=$sid")->fetch_assoc();
@@ -109,7 +106,6 @@ $pagina_corrente = basename($_SERVER['PHP_SELF'], '.php');
     <a href="clienti.php"      class="<?php echo $pagina_corrente==='clienti'?'attivo':'' ?>">👥 <span>clienti</span></a>
     <a href="servizi.php"      class="<?php echo $pagina_corrente==='servizi'?'attivo':'' ?>">💅 <span>servizi</span></a>
     <a href="magazzino.php"    class="<?php echo $pagina_corrente==='magazzino'?'attivo':'' ?>">📦 <span>magazzino</span></a>
-    <a href="whatsapp.php"     class="<?php echo $pagina_corrente==='whatsapp'?'attivo':'' ?>">💬 <span>whatsapp</span></a>
     <a href="analitiche.php"   class="<?php echo $pagina_corrente==='analitiche'?'attivo':'' ?>">📈 <span>analitiche</span></a>
     <a href="impostazioni.php" class="<?php echo $pagina_corrente==='impostazioni'?'attivo':'' ?>">⚙️ <span>impostazioni</span></a>
   </nav>

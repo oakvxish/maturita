@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $cfg = [];
-foreach ($conn->query("SELECT chiave,valore FROM impostazioni WHERE salone_id=$sid")->fetch_all(MYSQLI_ASSOC) as $r) {
+$result = $conn->query("SELECT chiave,valore FROM impostazioni WHERE salone_id=$sid");
+while ($r = $result->fetch_assoc()) {
     $cfg[$r['chiave']] = $r['valore'];
 }
 
@@ -59,9 +60,13 @@ require 'layout_top.php';
         <h3 style="font-size:.9rem;color:var(--text);margin-bottom:10px">link prenotazione pubblica</h3>
         <?php
           $slug_salone = $conn->query("SELECT slug FROM saloni WHERE id=$sid")->fetch_assoc()['slug'] ?? '';
-          $link_pub = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']==='on' ? 'https' : 'http')
-                    . '://' . $_SERVER['HTTP_HOST']
-                    . dirname($_SERVER['SCRIPT_NAME']) . '/prenota.php?s=' . urlencode($slug_salone);
+          $protocol = 'http';
+          if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+              $protocol = 'https';
+          }
+          $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+          $path = dirname($_SERVER['SCRIPT_NAME']);
+          $link_pub = $protocol . '://' . $host . $path . '/prenota.php?s=' . urlencode($slug_salone);
         ?>
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:.82rem;word-break:break-all;color:var(--text-muted)">
           <?php echo htmlspecialchars($link_pub) ?>
