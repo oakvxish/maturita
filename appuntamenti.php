@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stato = $conn->real_escape_string($_POST['stato']);
         $note  = $conn->real_escape_string($_POST['note'] ?? '');
 
-        // Verifica che cliente e servizio appartengano a questo salone
         $ok_c = (int)$conn->query("SELECT COUNT(*) AS n FROM clienti WHERE id=$cid AND salone_id=$sid")->fetch_assoc()['n'];
         $ok_s = (int)$conn->query("SELECT COUNT(*) AS n FROM servizi WHERE id=$svid AND salone_id=$sid")->fetch_assoc()['n'];
 
