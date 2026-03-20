@@ -1,699 +1,1297 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lumière — Salone di Bellezza</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lumière — Salone di Bellezza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  :root {
-    --cream: #f9f4ed;
-    --warm-white: #fffdf9;
-    --charcoal: #1c1917;
-    --muted: #78716c;
-    --gold: #b5924c;
-    --gold-light: #e8d5b0;
-    --border: #e8e0d5;
-    --nav-h: 70px;
-  }
+      :root {
+        --cream: #f9f4ed;
+        --warm-white: #fffdf9;
+        --charcoal: #1c1917;
+        --muted: #78716c;
+        --gold: #b5924c;
+        --gold-light: #e8d5b0;
+        --border: #e8e0d5;
+        --nav-h: 70px;
+      }
 
-  html { scroll-behavior: smooth; }
+      html {
+        scroll-behavior: smooth;
+      }
 
-  body {
-    font-family: 'Jost', sans-serif;
-    background: var(--warm-white);
-    color: var(--charcoal);
-    overflow-x: hidden;
-  }
+      body {
+        font-family: "Jost", sans-serif;
+        background: var(--warm-white);
+        color: var(--charcoal);
+        overflow-x: hidden;
+      }
 
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-    height: var(--nav-h);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 clamp(20px, 5vw, 60px);
-    background: rgba(249,244,237,0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s;
-  }
-  nav.scrolled { border-bottom-color: var(--border); }
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        height: var(--nav-h);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(20px, 5vw, 60px);
+        background: rgba(249, 244, 237, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+      }
+      nav.scrolled {
+        border-bottom-color: var(--border);
+      }
 
-  .nav-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.55rem; font-weight: 300; letter-spacing: 0.12em;
-    color: var(--charcoal); text-decoration: none; flex-shrink: 0;
-  }
-  .nav-logo em { font-style: italic; color: var(--gold); }
+      .nav-logo {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.55rem;
+        font-weight: 300;
+        letter-spacing: 0.12em;
+        color: var(--charcoal);
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      .nav-logo em {
+        font-style: italic;
+        color: var(--gold);
+      }
 
-  .nav-links { display: flex; gap: clamp(20px, 3vw, 40px); list-style: none; }
-  .nav-links a {
-    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--muted); text-decoration: none; transition: color 0.2s; white-space: nowrap;
-  }
-  .nav-links a:hover { color: var(--charcoal); }
+      .nav-links {
+        display: flex;
+        gap: clamp(20px, 3vw, 40px);
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        color: var(--charcoal);
+      }
 
-  .nav-cta {
-    font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--gold); border: 1px solid var(--gold);
-    padding: 9px 20px; text-decoration: none; white-space: nowrap;
-    transition: all 0.25s; flex-shrink: 0;
-  }
-  .nav-cta:hover { background: var(--gold); color: #fff; }
+      .nav-cta {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        padding: 9px 20px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.25s;
+        flex-shrink: 0;
+      }
+      .nav-cta:hover {
+        background: var(--gold);
+        color: #fff;
+      }
 
-  .nav-burger {
-    display: none; flex-direction: column; gap: 5px;
-    cursor: pointer; padding: 8px; background: none; border: none; flex-shrink: 0;
-  }
-  .nav-burger span { display: block; width: 24px; height: 1.5px; background: var(--charcoal); transition: all 0.3s; }
-  .nav-burger.aperto span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-  .nav-burger.aperto span:nth-child(2) { opacity: 0; }
-  .nav-burger.aperto span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+      .nav-burger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 8px;
+        background: none;
+        border: none;
+        flex-shrink: 0;
+      }
+      .nav-burger span {
+        display: block;
+        width: 24px;
+        height: 1.5px;
+        background: var(--charcoal);
+        transition: all 0.3s;
+      }
+      .nav-burger.aperto span:nth-child(1) {
+        transform: translateY(6.5px) rotate(45deg);
+      }
+      .nav-burger.aperto span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-burger.aperto span:nth-child(3) {
+        transform: translateY(-6.5px) rotate(-45deg);
+      }
 
-  .nav-mobile {
-    display: none; position: fixed;
-    top: var(--nav-h); left: 0; right: 0; bottom: 0;
-    background: var(--cream); z-index: 190;
-    flex-direction: column; align-items: center; justify-content: center; gap: 32px;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  }
-  .nav-mobile.aperto { opacity: 1; pointer-events: all; }
-  .nav-mobile a {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.2rem; font-weight: 300; color: var(--charcoal);
-    text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s;
-  }
-  .nav-mobile a:hover { color: var(--gold); }
-  .nav-mobile .mobile-cta {
-    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
-    font-family: 'Jost', sans-serif;
-    border: 1px solid var(--gold); color: var(--gold);
-    padding: 14px 36px; margin-top: 8px;
-  }
+      .nav-mobile {
+        display: none;
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--cream);
+        z-index: 190;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .nav-mobile.aperto {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .nav-mobile a {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.2rem;
+        font-weight: 300;
+        color: var(--charcoal);
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        transition: color 0.2s;
+      }
+      .nav-mobile a:hover {
+        color: var(--gold);
+      }
+      .nav-mobile .mobile-cta {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-family: "Jost", sans-serif;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        padding: 14px 36px;
+        margin-top: 8px;
+      }
 
-  .hero {
-    min-height: 100vh;
-    display: grid; grid-template-columns: 1fr 1fr;
-    padding-top: var(--nav-h);
-  }
+      .hero {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding-top: var(--nav-h);
+      }
 
-  .hero-left {
-    display: flex; flex-direction: column; justify-content: center;
-    padding: clamp(40px,6vw,80px) clamp(24px,4vw,60px) clamp(40px,6vw,80px) clamp(24px,6vw,80px);
-  }
+      .hero-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: clamp(40px, 6vw, 80px) clamp(24px, 4vw, 60px)
+          clamp(40px, 6vw, 80px) clamp(24px, 6vw, 80px);
+      }
 
-  .hero-tag {
-    font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 28px;
-    display: flex; align-items: center; gap: 14px;
-    animation: fadeUp 0.7s ease 0.1s both;
-  }
-  .hero-tag::before { content: ''; width: 36px; height: 1px; background: var(--gold); flex-shrink: 0; }
+      .hero-tag {
+        font-size: 0.68rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeUp 0.7s ease 0.1s both;
+      }
+      .hero-tag::before {
+        content: "";
+        width: 36px;
+        height: 1px;
+        background: var(--gold);
+        flex-shrink: 0;
+      }
 
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.8rem, 5.5vw, 5.2rem);
-    font-weight: 300; line-height: 1.05; color: var(--charcoal); margin-bottom: 24px;
-    animation: fadeUp 0.7s ease 0.25s both;
-  }
-  .hero-title em { font-style: italic; color: var(--gold); }
+      .hero-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+        font-weight: 300;
+        line-height: 1.05;
+        color: var(--charcoal);
+        margin-bottom: 24px;
+        animation: fadeUp 0.7s ease 0.25s both;
+      }
+      .hero-title em {
+        font-style: italic;
+        color: var(--gold);
+      }
 
-  .hero-text {
-    font-size: clamp(0.85rem,1.5vw,0.95rem); line-height: 1.85;
-    color: var(--muted); max-width: 380px; margin-bottom: 40px; font-weight: 300;
-    animation: fadeUp 0.7s ease 0.4s both;
-  }
+      .hero-text {
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        line-height: 1.85;
+        color: var(--muted);
+        max-width: 380px;
+        margin-bottom: 40px;
+        font-weight: 300;
+        animation: fadeUp 0.7s ease 0.4s both;
+      }
 
-  .hero-btns {
-    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
-    animation: fadeUp 0.7s ease 0.55s both;
-  }
+      .hero-btns {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+        animation: fadeUp 0.7s ease 0.55s both;
+      }
 
-  .btn-primary {
-    background: var(--charcoal); color: var(--cream);
-    padding: 15px 32px; text-decoration: none;
-    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-    transition: all 0.25s; white-space: nowrap;
-  }
-  .btn-primary:hover { background: var(--gold); }
+      .btn-primary {
+        background: var(--charcoal);
+        color: var(--cream);
+        padding: 15px 32px;
+        text-decoration: none;
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        transition: all 0.25s;
+        white-space: nowrap;
+      }
+      .btn-primary:hover {
+        background: var(--gold);
+      }
 
-  .btn-ghost {
-    color: var(--charcoal); text-decoration: none;
-    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-    display: flex; align-items: center; gap: 10px; transition: color 0.2s; white-space: nowrap;
-  }
-  .btn-ghost:hover { color: var(--gold); }
-  .btn-ghost::after { content: '→'; font-size: 1rem; }
+      .btn-ghost {
+        color: var(--charcoal);
+        text-decoration: none;
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: color 0.2s;
+        white-space: nowrap;
+      }
+      .btn-ghost:hover {
+        color: var(--gold);
+      }
+      .btn-ghost::after {
+        content: "→";
+        font-size: 1rem;
+      }
 
-  .hero-right { position: relative; overflow: hidden; background: var(--cream); }
+      .hero-right {
+        position: relative;
+        overflow: hidden;
+        background: var(--cream);
+      }
 
-  .hero-img-placeholder {
-    width: 100%; height: 100%; min-height: 400px;
-    position: relative;
-  }
-  .hero-img-placeholder img {
-    width: 100%; height: 100%; object-fit: cover; object-position: center top;
-    display: block;
-  }
+      .hero-img-placeholder {
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+        background: linear-gradient(
+          135deg,
+          #e8d5b0 0%,
+          #d4b896 30%,
+          #c9a99a 60%,
+          #b58b7a 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(5rem, 12vw, 10rem);
+        color: rgba(255, 255, 255, 0.25);
+        font-weight: 300;
+        font-style: italic;
+      }
 
-  .hero-badge {
-    position: absolute; bottom: 40px; left: -20px;
-    background: var(--charcoal); color: var(--gold-light);
-    padding: 18px 26px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85rem; font-style: italic; letter-spacing: 0.05em;
-    box-shadow: 0 20px 60px rgba(28,25,23,0.25);
-  }
-  .hero-badge strong { display: block; font-size: 1.9rem; font-weight: 300; font-style: normal; }
+      .hero-badge {
+        position: absolute;
+        bottom: 40px;
+        left: -20px;
+        background: var(--charcoal);
+        color: var(--gold-light);
+        padding: 18px 26px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 0.85rem;
+        font-style: italic;
+        letter-spacing: 0.05em;
+        box-shadow: 0 20px 60px rgba(28, 25, 23, 0.25);
+      }
+      .hero-badge strong {
+        display: block;
+        font-size: 1.9rem;
+        font-weight: 300;
+        font-style: normal;
+      }
 
-  .servizi {
-    padding: clamp(60px,8vw,100px) clamp(20px,6vw,80px);
-    background: var(--cream);
-  }
+      .servizi {
+        padding: clamp(60px, 8vw, 100px) clamp(20px, 6vw, 80px);
+        background: var(--cream);
+      }
 
-  .section-header { text-align: center; margin-bottom: clamp(40px,6vw,70px); }
+      .section-header {
+        text-align: center;
+        margin-bottom: clamp(40px, 6vw, 70px);
+      }
 
-  .section-tag {
-    font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
-    color: var(--gold); display: block; margin-bottom: 18px;
-  }
+      .section-tag {
+        font-size: 0.68rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--gold);
+        display: block;
+        margin-bottom: 18px;
+      }
 
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem,4vw,3.4rem); font-weight: 300; line-height: 1.15;
-  }
-  .section-title em { font-style: italic; color: var(--gold); }
+      .section-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        font-weight: 300;
+        line-height: 1.15;
+      }
+      .section-title em {
+        font-style: italic;
+        color: var(--gold);
+      }
 
-  .servizi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; }
+      .servizi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+      }
 
-  .servizio-card {
-    background: var(--warm-white);
-    padding: clamp(24px,3vw,40px) clamp(20px,2.5vw,32px);
-    border: 1px solid var(--border); position: relative;
-    transition: all 0.3s; overflow: hidden;
-  }
-  .servizio-card::before {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-    background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
-  }
-  .servizio-card:hover { background: var(--charcoal); }
-  .servizio-card:hover .servizio-nome,
-  .servizio-card:hover .servizio-desc { color: var(--cream); }
-  .servizio-card:hover .servizio-prezzo { color: var(--gold); }
-  .servizio-card:hover::before { transform: scaleX(1); }
-  .servizio-card:hover .servizio-num { color: rgba(181,146,76,0.2); }
+      .servizio-card {
+        background: var(--warm-white);
+        padding: clamp(24px, 3vw, 40px) clamp(20px, 2.5vw, 32px);
+        border: 1px solid var(--border);
+        position: relative;
+        transition: all 0.3s;
+        overflow: hidden;
+      }
+      .servizio-card::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--gold);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s;
+      }
+      .servizio-card:hover {
+        background: var(--charcoal);
+      }
+      .servizio-card:hover .servizio-nome,
+      .servizio-card:hover .servizio-desc {
+        color: var(--cream);
+      }
+      .servizio-card:hover .servizio-prezzo {
+        color: var(--gold);
+      }
+      .servizio-card:hover::before {
+        transform: scaleX(1);
+      }
+      .servizio-card:hover .servizio-num {
+        color: rgba(181, 146, 76, 0.2);
+      }
 
-  .servizio-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 3rem; font-weight: 300; color: var(--border); line-height: 1; margin-bottom: 18px; transition: color 0.3s;
-  }
-  .servizio-nome {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem; font-weight: 400; color: var(--charcoal); margin-bottom: 10px; transition: color 0.3s;
-  }
-  .servizio-desc { font-size: 0.8rem; line-height: 1.7; color: var(--muted); margin-bottom: 18px; transition: color 0.3s; }
-  .servizio-prezzo {
-    font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 500; transition: color 0.3s;
-  }
+      .servizio-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 3rem;
+        font-weight: 300;
+        color: var(--border);
+        line-height: 1;
+        margin-bottom: 18px;
+        transition: color 0.3s;
+      }
+      .servizio-nome {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.25rem;
+        font-weight: 400;
+        color: var(--charcoal);
+        margin-bottom: 10px;
+        transition: color 0.3s;
+      }
+      .servizio-desc {
+        font-size: 0.8rem;
+        line-height: 1.7;
+        color: var(--muted);
+        margin-bottom: 18px;
+        transition: color 0.3s;
+      }
+      .servizio-prezzo {
+        font-size: 0.72rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 500;
+        transition: color 0.3s;
+      }
 
-  .about { display: grid; grid-template-columns: 1fr 1fr; min-height: 60vh; }
+      .about {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 60vh;
+      }
 
-  .about-img {
-    position: relative; overflow: hidden;
-    display: flex; align-items: flex-end; min-height: 360px;
-  }
-  .about-img img {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: cover; object-position: center;
-  }
-  .about-img::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(28,25,23,0.55) 0%, rgba(28,25,23,0.1) 60%, transparent 100%);
-  }
-  .about-img-quote {
-    position: relative; z-index: 2;
-    padding: 32px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1rem,2vw,1.35rem); font-style: italic; font-weight: 300;
-    color: rgba(255,255,255,0.95); line-height: 1.5;
-  }
+      .about-img {
+        background: linear-gradient(180deg, #c9a99a 0%, #8b6355 100%);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 360px;
+      }
+      .about-img-inner {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(6rem, 15vw, 12rem);
+        color: rgba(255, 255, 255, 0.12);
+        font-weight: 300;
+        font-style: italic;
+        user-select: none;
+      }
+      .about-img-quote {
+        position: absolute;
+        bottom: 32px;
+        left: 32px;
+        right: 32px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1rem, 2vw, 1.35rem);
+        font-style: italic;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.5;
+      }
 
-  .about-text {
-    padding: clamp(40px,6vw,80px) clamp(24px,5vw,80px);
-    display: flex; flex-direction: column; justify-content: center; background: var(--charcoal);
-  }
-  .about-text .section-tag { text-align: left; }
-  .about-text .section-title { color: var(--cream); text-align: left; margin-bottom: 24px; }
-  .about-text p { font-size: 0.9rem; line-height: 1.85; color: #a8a29e; font-weight: 300; margin-bottom: 18px; }
+      .about-text {
+        padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 80px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: var(--charcoal);
+      }
+      .about-text .section-tag {
+        text-align: left;
+      }
+      .about-text .section-title {
+        color: var(--cream);
+        text-align: left;
+        margin-bottom: 24px;
+      }
+      .about-text p {
+        font-size: 0.9rem;
+        line-height: 1.85;
+        color: #a8a29e;
+        font-weight: 300;
+        margin-bottom: 18px;
+      }
 
-  .about-stats {
-    display: flex; gap: clamp(24px,4vw,48px); margin-top: 36px;
-    padding-top: 36px; border-top: 1px solid #3d3835; flex-wrap: wrap;
-  }
-  .stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem,3.5vw,2.8rem); font-weight: 300; color: var(--gold); display: block; line-height: 1;
-  }
-  .stat-label { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: #78716c; margin-top: 5px; display: block; }
+      .about-stats {
+        display: flex;
+        gap: clamp(24px, 4vw, 48px);
+        margin-top: 36px;
+        padding-top: 36px;
+        border-top: 1px solid #3d3835;
+        flex-wrap: wrap;
+      }
+      .stat-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2rem, 3.5vw, 2.8rem);
+        font-weight: 300;
+        color: var(--gold);
+        display: block;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #78716c;
+        margin-top: 5px;
+        display: block;
+      }
 
-  .prenotazione {
-    padding: clamp(60px,8vw,100px) clamp(20px,6vw,80px);
-    background: var(--warm-white); position: relative; overflow: hidden;
-  }
-  .prenotazione-deco {
-    position: absolute; top: 40px; right: 40px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(4rem,9vw,9rem); font-weight: 300;
-    color: var(--border); line-height: 1; pointer-events: none; user-select: none; letter-spacing: -0.02em;
-  }
+      .prenotazione {
+        padding: clamp(60px, 8vw, 100px) clamp(20px, 6vw, 80px);
+        background: var(--warm-white);
+        position: relative;
+        overflow: hidden;
+      }
+      .prenotazione-deco {
+        position: absolute;
+        top: 40px;
+        right: 40px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(4rem, 9vw, 9rem);
+        font-weight: 300;
+        color: var(--border);
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+        letter-spacing: -0.02em;
+      }
 
-  .prenotazione-inner {
-    display: grid; grid-template-columns: 1fr 1.4fr;
-    gap: clamp(40px,6vw,80px); align-items: start; max-width: 1100px; position: relative;
-  }
+      .prenotazione-inner {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr;
+        gap: clamp(40px, 6vw, 80px);
+        align-items: start;
+        max-width: 1100px;
+        position: relative;
+      }
 
-  .prenotazione-info .section-title { text-align: left; margin-bottom: 20px; }
-  .prenotazione-info > p { font-size: 0.88rem; line-height: 1.8; color: var(--muted); font-weight: 300; margin-bottom: 28px; }
+      .prenotazione-info .section-title {
+        text-align: left;
+        margin-bottom: 20px;
+      }
+      .prenotazione-info > p {
+        font-size: 0.88rem;
+        line-height: 1.8;
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 28px;
+      }
 
-  .info-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
-  .info-icon {
-    width: 34px; height: 34px; flex-shrink: 0;
-    border: 1px solid var(--border); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--gold);
-  }
-  .info-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
-  .info-value { font-size: 0.88rem; color: var(--charcoal); font-weight: 400; }
+      .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .info-icon {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        color: var(--gold);
+      }
+      .info-label {
+        font-size: 0.68rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 2px;
+      }
+      .info-value {
+        font-size: 0.88rem;
+        color: var(--charcoal);
+        font-weight: 400;
+      }
 
-  .form-card {
-    background: var(--cream); padding: clamp(28px,4vw,50px);
-    border: 1px solid var(--border); position: relative;
-  }
-  .form-card::before {
-    content: ''; position: absolute; top: -1px; left: 40px; right: 40px; height: 2px; background: var(--gold);
-  }
+      .form-card {
+        background: var(--cream);
+        padding: clamp(28px, 4vw, 50px);
+        border: 1px solid var(--border);
+        position: relative;
+      }
+      .form-card::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 40px;
+        right: 40px;
+        height: 2px;
+        background: var(--gold);
+      }
 
-  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.55rem; font-weight: 400; margin-bottom: 4px; }
-  .form-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 32px; }
+      .form-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.55rem;
+        font-weight: 400;
+        margin-bottom: 4px;
+      }
+      .form-subtitle {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 32px;
+      }
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
 
-  .form-group { margin-bottom: 18px; }
-  .form-group label {
-    display: block; font-size: 0.65rem; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%; padding: 12px 14px;
-    border: 1px solid var(--border); border-radius: 0;
-    background: var(--warm-white); color: var(--charcoal);
-    font-family: 'Jost', sans-serif; font-size: 0.88rem; font-weight: 300;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    appearance: none; -webkit-appearance: none;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(181,146,76,0.08);
-  }
-  .form-group textarea { resize: vertical; min-height: 80px; }
-  .form-group select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2378716c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
-  }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 7px;
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 0;
+        background: var(--warm-white);
+        color: var(--charcoal);
+        font-family: "Jost", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 300;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(181, 146, 76, 0.08);
+      }
+      .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2378716c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+      }
 
-  .form-note {
-    font-size: 0.74rem; color: var(--muted); margin-bottom: 24px; line-height: 1.65;
-    padding: 12px 14px; background: var(--warm-white); border-left: 2px solid var(--gold-light);
-  }
+      .form-note {
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.65;
+        padding: 12px 14px;
+        background: var(--warm-white);
+        border-left: 2px solid var(--gold-light);
+      }
 
-  .form-submit {
-    width: 100%; padding: 16px;
-    background: var(--charcoal); color: var(--gold-light); border: none; cursor: pointer;
-    font-family: 'Jost', sans-serif; font-size: 0.72rem;
-    letter-spacing: 0.25em; text-transform: uppercase; transition: all 0.25s; font-weight: 500;
-  }
-  .form-submit:hover { background: var(--gold); color: #fff; }
+      .form-submit {
+        width: 100%;
+        padding: 16px;
+        background: var(--charcoal);
+        color: var(--gold-light);
+        border: none;
+        cursor: pointer;
+        font-family: "Jost", sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        transition: all 0.25s;
+        font-weight: 500;
+      }
+      .form-submit:hover {
+        background: var(--gold);
+        color: #fff;
+      }
 
-  .testimonial {
-    background: var(--cream); padding: clamp(50px,7vw,80px) clamp(20px,6vw,80px);
-    text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-  }
-  .stars { color: var(--gold); font-size: 1rem; letter-spacing: 4px; margin-bottom: 24px; }
-  .testimonial-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.2rem,2.5vw,1.9rem);
-    font-weight: 300; font-style: italic; line-height: 1.55;
-    color: var(--charcoal); max-width: 680px; margin: 0 auto 20px;
-  }
-  .testimonial-author { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+      .testimonial {
+        background: var(--cream);
+        padding: clamp(50px, 7vw, 80px) clamp(20px, 6vw, 80px);
+        text-align: center;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .stars {
+        color: var(--gold);
+        font-size: 1rem;
+        letter-spacing: 4px;
+        margin-bottom: 24px;
+      }
+      .testimonial-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+        font-weight: 300;
+        font-style: italic;
+        line-height: 1.55;
+        color: var(--charcoal);
+        max-width: 680px;
+        margin: 0 auto 20px;
+      }
+      .testimonial-author {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
 
-  footer {
-    background: var(--charcoal); color: #a8a29e;
-    padding: clamp(48px,6vw,60px) clamp(20px,6vw,80px) clamp(32px,4vw,40px);
-    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: clamp(32px,5vw,60px);
-  }
-  .footer-brand .nav-logo { color: var(--gold-light); display: block; margin-bottom: 14px; }
-  .footer-brand p { font-size: 0.82rem; line-height: 1.75; font-weight: 300; }
+      footer {
+        background: var(--charcoal);
+        color: #a8a29e;
+        padding: clamp(48px, 6vw, 60px) clamp(20px, 6vw, 80px)
+          clamp(32px, 4vw, 40px);
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: clamp(32px, 5vw, 60px);
+      }
+      .footer-brand .nav-logo {
+        color: var(--gold-light);
+        display: block;
+        margin-bottom: 14px;
+      }
+      .footer-brand p {
+        font-size: 0.82rem;
+        line-height: 1.75;
+        font-weight: 300;
+      }
 
-  .footer-col h4 { font-size: 0.66rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
-  .footer-col ul { list-style: none; }
-  .footer-col ul li { margin-bottom: 9px; }
-  .footer-col ul li a { color: #78716c; text-decoration: none; font-size: 0.82rem; font-weight: 300; transition: color 0.2s; }
-  .footer-col ul li a:hover { color: var(--gold-light); }
-  .footer-col p { font-size: 0.82rem; line-height: 1.8; font-weight: 300; }
+      .footer-col h4 {
+        font-size: 0.66rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 18px;
+      }
+      .footer-col ul {
+        list-style: none;
+      }
+      .footer-col ul li {
+        margin-bottom: 9px;
+      }
+      .footer-col ul li a {
+        color: #78716c;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 300;
+        transition: color 0.2s;
+      }
+      .footer-col ul li a:hover {
+        color: var(--gold-light);
+      }
+      .footer-col p {
+        font-size: 0.82rem;
+        line-height: 1.8;
+        font-weight: 300;
+      }
 
-  .footer-bottom {
-    background: var(--charcoal);
-    padding: 18px clamp(20px,6vw,80px);
-    border-top: 1px solid #2c2926;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-  }
-  .footer-bottom p { font-size: 0.73rem; color: #57534e; font-weight: 300; }
-  .footer-bottom a { color: var(--gold); text-decoration: none; font-size: 0.73rem; }
+      .footer-bottom {
+        background: var(--charcoal);
+        padding: 18px clamp(20px, 6vw, 80px);
+        border-top: 1px solid #2c2926;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .footer-bottom p {
+        font-size: 0.73rem;
+        color: #57534e;
+        font-weight: 300;
+      }
+      .footer-bottom a {
+        color: var(--gold);
+        text-decoration: none;
+        font-size: 0.73rem;
+      }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(28px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-  @media (max-width: 1024px) {
-    .servizi-grid { grid-template-columns: repeat(2,1fr); }
-    footer { grid-template-columns: 1fr 1fr; }
-    .footer-brand { grid-column: 1 / -1; }
-    .prenotazione-inner { grid-template-columns: 1fr; }
-    .prenotazione-deco { display: none; }
-  }
+      @media (max-width: 1024px) {
+        .servizi-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        footer {
+          grid-template-columns: 1fr 1fr;
+        }
+        .footer-brand {
+          grid-column: 1 / -1;
+        }
+        .prenotazione-inner {
+          grid-template-columns: 1fr;
+        }
+        .prenotazione-deco {
+          display: none;
+        }
+      }
 
-  @media (max-width: 768px) {
-    :root { --nav-h: 64px; }
+      @media (max-width: 768px) {
+        :root {
+          --nav-h: 64px;
+        }
 
-    .nav-links, .nav-cta { display: none; }
-    .nav-burger { display: flex; }
-    .nav-mobile { display: flex; }
+        .nav-links,
+        .nav-cta {
+          display: none;
+        }
+        .nav-burger {
+          display: flex;
+        }
+        .nav-mobile {
+          display: flex;
+        }
 
-    .hero { grid-template-columns: 1fr; min-height: auto; }
-    .hero-right { order: -1; height: 55vw; min-height: 220px; }
-    .hero-img-placeholder { min-height: 0; height: 100%; }
-    .hero-badge { display: none; }
-    .hero-left { padding: 36px 20px 52px; }
-    .hero-text { max-width: 100%; }
-    .hero-btns { flex-direction: column; align-items: stretch; gap: 14px; }
-    .btn-primary { text-align: center; padding: 16px; }
-    .btn-ghost { justify-content: center; }
+        .hero {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+        .hero-right {
+          order: -1;
+          height: 55vw;
+          min-height: 220px;
+        }
+        .hero-img-placeholder {
+          min-height: 0;
+          height: 100%;
+        }
+        .hero-badge {
+          display: none;
+        }
+        .hero-left {
+          padding: 36px 20px 52px;
+        }
+        .hero-text {
+          max-width: 100%;
+        }
+        .hero-btns {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 14px;
+        }
+        .btn-primary {
+          text-align: center;
+          padding: 16px;
+        }
+        .btn-ghost {
+          justify-content: center;
+        }
 
-    .servizi-grid { grid-template-columns: 1fr; }
+        .servizi-grid {
+          grid-template-columns: 1fr;
+        }
 
-    .about { grid-template-columns: 1fr; }
-    .about-img { min-height: 260px; }
-    .about-img-inner { font-size: 6rem; }
-    .about-text { padding: 40px 20px; }
+        .about {
+          grid-template-columns: 1fr;
+        }
+        .about-img {
+          min-height: 260px;
+        }
+        .about-img-inner {
+          font-size: 6rem;
+        }
+        .about-text {
+          padding: 40px 20px;
+        }
 
-    .form-row { grid-template-columns: 1fr; }
-    .form-card { padding: 28px 20px; }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+        .form-card {
+          padding: 28px 20px;
+        }
 
-    footer { grid-template-columns: 1fr; gap: 36px; }
-    .footer-brand { grid-column: auto; }
-  }
+        footer {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+        .footer-brand {
+          grid-column: auto;
+        }
+      }
 
-  /* SMALL ≤400px */
-  @media (max-width: 400px) {
-    .hero-title { font-size: 2.4rem; }
-    .nav-logo { font-size: 1.3rem; }
-    .about-img-quote { font-size: 0.9rem; }
-  }
-</style>
-</head>
-<body>
+      /* SMALL ≤400px */
+      @media (max-width: 400px) {
+        .hero-title {
+          font-size: 2.4rem;
+        }
+        .nav-logo {
+          font-size: 1.3rem;
+        }
+        .about-img-quote {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav id="nav">
+      <a href="#" class="nav-logo">Lu<em>mière</em></a>
+      <ul class="nav-links">
+        <li><a href="#servizi">servizi</a></li>
+        <li><a href="#about">chi siamo</a></li>
+        <li><a href="#prenota">prenota</a></li>
+        <li><a href="#contatti">contatti</a></li>
+      </ul>
+      <a href="#prenota" class="nav-cta">prenota ora</a>
+      <button class="nav-burger" id="burger" aria-label="apri menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
 
-<!-- NAV -->
-<nav id="nav">
-  <a href="#" class="nav-logo">Lu<em>mière</em></a>
-  <ul class="nav-links">
-    <li><a href="#servizi">servizi</a></li>
-    <li><a href="#about">chi siamo</a></li>
-    <li><a href="#prenota">prenota</a></li>
-    <li><a href="#contatti">contatti</a></li>
-  </ul>
-  <a href="#prenota" class="nav-cta">prenota ora</a>
-  <button class="nav-burger" id="burger" aria-label="apri menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<!-- MENU MOBILE -->
-<div class="nav-mobile" id="navMobile">
-  <a href="#servizi"  onclick="chiudiMenu()">servizi</a>
-  <a href="#about"    onclick="chiudiMenu()">chi siamo</a>
-  <a href="#prenota"  onclick="chiudiMenu()">prenota</a>
-  <a href="#contatti" onclick="chiudiMenu()">contatti</a>
-  <a href="#prenota"  onclick="chiudiMenu()" class="mobile-cta">prenota ora</a>
-</div>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-tag">salone di bellezza · dal 2008</div>
-    <h1 class="hero-title">La bellezza<br>è un'<em>arte</em><br>da coltivare</h1>
-    <p class="hero-text">
-      Un rifugio di cura e raffinatezza nel cuore della città.
-      Ogni trattamento è pensato per esaltare la tua unicità,
-      con tecniche all'avanguardia e prodotti selezionati.
-    </p>
-    <div class="hero-btns">
-      <a href="#prenota" class="btn-primary">prenota appuntamento</a>
-      <a href="#servizi"  class="btn-ghost">scopri i servizi</a>
+    <!-- MENU MOBILE -->
+    <div class="nav-mobile" id="navMobile">
+      <a href="#servizi" onclick="chiudiMenu()">servizi</a>
+      <a href="#about" onclick="chiudiMenu()">chi siamo</a>
+      <a href="#prenota" onclick="chiudiMenu()">prenota</a>
+      <a href="#contatti" onclick="chiudiMenu()">contatti</a>
+      <a href="#prenota" onclick="chiudiMenu()" class="mobile-cta"
+        >prenota ora</a
+      >
     </div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-img-placeholder">
-      <img src="https://images.unsplash.com/photo-1728488448472-16a259c6ba7c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Salone di bellezza Lumière">
-    </div>
-    <div class="hero-badge">
-      <span>clienti soddisfatte</span>
-      <strong>2.400+</strong>
-    </div>
-  </div>
-</section>
 
-<!-- SERVIZI -->
-<section class="servizi" id="servizi">
-  <div class="section-header">
-    <span class="section-tag">i nostri servizi</span>
-    <h2 class="section-title">Tutto ciò di cui<br>hai bisogno, in un <em>unico posto</em></h2>
-  </div>
-  <div class="servizi-grid">
-    <div class="servizio-card">
-      <div class="servizio-num">01</div>
-      <div class="servizio-nome">Capelli</div>
-      <p class="servizio-desc">Taglio, piega, colorazione e trattamenti rigeneranti con i migliori prodotti professionali.</p>
-      <div class="servizio-prezzo">da €20</div>
-    </div>
-    <div class="servizio-card">
-      <div class="servizio-num">02</div>
-      <div class="servizio-nome">Unghie</div>
-      <p class="servizio-desc">Manicure, pedicure e nail art personalizzata. Mani e piedi sempre impeccabili.</p>
-      <div class="servizio-prezzo">da €25</div>
-    </div>
-    <div class="servizio-card">
-      <div class="servizio-num">03</div>
-      <div class="servizio-nome">Viso</div>
-      <p class="servizio-desc">Pulizie profonde, trattamenti idratanti e rituali anti-età per una pelle luminosa.</p>
-      <div class="servizio-prezzo">da €40</div>
-    </div>
-    <div class="servizio-card">
-      <div class="servizio-num">04</div>
-      <div class="servizio-nome">Corpo</div>
-      <p class="servizio-desc">Ceretta, epilazione e trattamenti corpo per una pelle vellutata e curata nei minimi dettagli.</p>
-      <div class="servizio-prezzo">da €20</div>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="about" id="about">
-  <div class="about-img">
-    <img src="https://plus.unsplash.com/premium_photo-1666990806921-a9bf7dc72efe?q=80&w=746&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Interno salone Lumière">
-    <div class="about-img-quote">"La cura di sé non è un lusso,<br>è una necessità dell'anima."</div>
-  </div>
-  <div class="about-text">
-    <span class="section-tag">chi siamo</span>
-    <h2 class="section-title" style="color:var(--cream)">Sedici anni di<br><em>passione</em> e cura</h2>
-    <p>Lumière nasce nel 2008 da un sogno: creare uno spazio dove ogni donna si senta ascoltata, valorizzata e bella. Nel corso degli anni abbiamo perfezionato ogni dettaglio, dalla qualità dei prodotti alla formazione del nostro team.</p>
-    <p>Il nostro approccio è semplice: ci prendiamo il tempo necessario per capire le tue esigenze e trasformarle in risultati che durano. Nessuna fretta, solo attenzione e professionalità.</p>
-    <div class="about-stats">
-      <div><span class="stat-num">16</span><span class="stat-label">anni di esperienza</span></div>
-      <div><span class="stat-num">8</span><span class="stat-label">professioniste</span></div>
-      <div><span class="stat-num">98%</span><span class="stat-label">clienti soddisfatte</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- PRENOTAZIONE -->
-<section class="prenotazione" id="prenota">
-  <div class="prenotazione-deco">PRENOTA</div>
-  <div class="prenotazione-inner">
-
-    <div class="prenotazione-info">
-      <span class="section-tag">prenota</span>
-      <h2 class="section-title">Regalati un<br>momento <em>tutto tuo</em></h2>
-      <p>Prenota il tuo appuntamento in pochi passaggi. Riceverai una conferma via WhatsApp e un promemoria il giorno prima.</p>
-      <div class="info-item">
-        <div class="info-icon">⏰</div>
-        <div><span class="info-label">orari</span><span class="info-value">Martedì — Sabato · 9:00 – 19:00</span></div>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hero-tag">salone di bellezza · dal 2008</div>
+        <h1 class="hero-title">
+          La bellezza<br />è un'<em>arte</em><br />da coltivare
+        </h1>
+        <p class="hero-text">
+          Un rifugio di cura e raffinatezza nel cuore della città. Ogni
+          trattamento è pensato per esaltare la tua unicità, con tecniche
+          all'avanguardia e prodotti selezionati.
+        </p>
+        <div class="hero-btns">
+          <a href="#prenota" class="btn-primary">prenota appuntamento</a>
+          <a href="#servizi" class="btn-ghost">scopri i servizi</a>
+        </div>
       </div>
-      <div class="info-item">
-        <div class="info-icon">📍</div>
-        <div><span class="info-label">dove siamo</span><span class="info-value">Via delle Rose 14 · Milano</span></div>
+      <div class="hero-right">
+        <div class="hero-img-placeholder">L</div>
+        <div class="hero-badge">
+          <span>clienti soddisfatte</span>
+          <strong>2.400+</strong>
+        </div>
       </div>
-      <div class="info-item">
-        <div class="info-icon">📞</div>
-        <div><span class="info-label">telefono</span><span class="info-value">02 1234 5678</span></div>
+    </section>
+
+    <!-- SERVIZI -->
+    <section class="servizi" id="servizi">
+      <div class="section-header">
+        <span class="section-tag">i nostri servizi</span>
+        <h2 class="section-title">
+          Tutto ciò di cui<br />hai bisogno, in un <em>unico posto</em>
+        </h2>
       </div>
-      <div class="info-item">
-        <div class="info-icon">💬</div>
-        <div><span class="info-label">whatsapp</span><span class="info-value">+39 333 123 4567</span></div>
+      <div class="servizi-grid">
+        <div class="servizio-card">
+          <div class="servizio-num">01</div>
+          <div class="servizio-nome">Capelli</div>
+          <p class="servizio-desc">
+            Taglio, piega, colorazione e trattamenti rigeneranti con i migliori
+            prodotti professionali.
+          </p>
+          <div class="servizio-prezzo">da €20</div>
+        </div>
+        <div class="servizio-card">
+          <div class="servizio-num">02</div>
+          <div class="servizio-nome">Unghie</div>
+          <p class="servizio-desc">
+            Manicure, pedicure e nail art personalizzata. Mani e piedi sempre
+            impeccabili.
+          </p>
+          <div class="servizio-prezzo">da €25</div>
+        </div>
+        <div class="servizio-card">
+          <div class="servizio-num">03</div>
+          <div class="servizio-nome">Viso</div>
+          <p class="servizio-desc">
+            Pulizie profonde, trattamenti idratanti e rituali anti-età per una
+            pelle luminosa.
+          </p>
+          <div class="servizio-prezzo">da €40</div>
+        </div>
+        <div class="servizio-card">
+          <div class="servizio-num">04</div>
+          <div class="servizio-nome">Corpo</div>
+          <p class="servizio-desc">
+            Ceretta, epilazione e trattamenti corpo per una pelle vellutata e
+            curata nei minimi dettagli.
+          </p>
+          <div class="servizio-prezzo">da €20</div>
+        </div>
       </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+      <div class="about-img">
+        <div class="about-img-inner">L</div>
+        <div class="about-img-quote">
+          "La cura di sé non è un lusso,<br />è una necessità dell'anima."
+        </div>
+      </div>
+      <div class="about-text">
+        <span class="section-tag">chi siamo</span>
+        <h2 class="section-title" style="color: var(--cream)">
+          Sedici anni di<br /><em>passione</em> e cura
+        </h2>
+        <p>
+          Lumière nasce nel 2008 da un sogno: creare uno spazio dove ogni donna
+          si senta ascoltata, valorizzata e bella. Nel corso degli anni abbiamo
+          perfezionato ogni dettaglio, dalla qualità dei prodotti alla
+          formazione del nostro team.
+        </p>
+        <p>
+          Il nostro approccio è semplice: ci prendiamo il tempo necessario per
+          capire le tue esigenze e trasformarle in risultati che durano. Nessuna
+          fretta, solo attenzione e professionalità.
+        </p>
+        <div class="about-stats">
+          <div>
+            <span class="stat-num">16</span
+            ><span class="stat-label">anni di esperienza</span>
+          </div>
+          <div>
+            <span class="stat-num">8</span
+            ><span class="stat-label">professioniste</span>
+          </div>
+          <div>
+            <span class="stat-num">98%</span
+            ><span class="stat-label">clienti soddisfatte</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRENOTAZIONE -->
+    <section class="prenotazione" id="prenota">
+      <div class="prenotazione-deco">PRENOTA</div>
+      <div class="prenotazione-inner">
+        <div class="prenotazione-info">
+          <span class="section-tag">prenota</span>
+          <h2 class="section-title">
+            Regalati un<br />momento <em>tutto tuo</em>
+          </h2>
+          <p>
+            Prenota il tuo appuntamento in pochi passaggi. Riceverai una
+            conferma via WhatsApp e un promemoria il giorno prima.
+          </p>
+          <div class="info-item">
+            <div class="info-icon">⏰</div>
+            <div>
+              <span class="info-label">orari</span
+              ><span class="info-value">Martedì — Sabato · 9:00 – 19:00</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📍</div>
+            <div>
+              <span class="info-label">dove siamo</span
+              ><span class="info-value">Via delle Rose 14 · Milano</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📞</div>
+            <div>
+              <span class="info-label">telefono</span
+              ><span class="info-value">02 1234 5678</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">💬</div>
+            <div>
+              <span class="info-label">whatsapp</span
+              ><span class="info-value">+39 333 123 4567</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h3 class="form-title">Prenota il tuo appuntamento</h3>
+          <p class="form-subtitle">
+            Compila il form e ti ricontatteremo entro poche ore
+          </p>
+          <form method="POST" action="prenota.php">
+            <div class="form-row">
+              <div class="form-group">
+                <label>nome *</label>
+                <input
+                  type="text"
+                  name="_nome"
+                  placeholder="il tuo nome"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>cognome *</label>
+                <input
+                  type="text"
+                  name="_cognome"
+                  placeholder="il tuo cognome"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>telefono *</label>
+                <input
+                  type="tel"
+                  name="_telefono"
+                  placeholder="333 000 0000"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>email</label>
+                <input type="email" name="_email" placeholder="tu@email.it" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>servizio desiderato *</label>
+              <select name="servizio_id" required>
+                <option value="">scegli il servizio</option>
+                <option value="2">piega — €20 · 30min</option>
+                <option value="3">colorazione — €60 · 90min</option>
+                <option value="4">manicure — €25 · 45min</option>
+                <option value="5">pedicure — €30 · 60min</option>
+                <option value="6">pulizia viso — €40 · 60min</option>
+                <option value="7">ceretta — €20 · 30min</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>data preferita *</label>
+                <input type="date" name="_data" required />
+              </div>
+              <div class="form-group">
+                <label>ora preferita *</label>
+                <select name="_ora" required>
+                  <option value="">scegli l'ora</option>
+                  <option value="09:00">09:00</option>
+                  <option value="09:30">09:30</option>
+                  <option value="10:00">10:00</option>
+                  <option value="10:30">10:30</option>
+                  <option value="11:00">11:00</option>
+                  <option value="11:30">11:30</option>
+                  <option value="12:00">12:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="14:30">14:30</option>
+                  <option value="15:00">15:00</option>
+                  <option value="15:30">15:30</option>
+                  <option value="16:00">16:00</option>
+                  <option value="16:30">16:30</option>
+                  <option value="17:00">17:00</option>
+                  <option value="17:30">17:30</option>
+                  <option value="18:00">18:00</option>
+                  <option value="18:30">18:30</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>note o richieste particolari</label>
+              <textarea
+                name="note"
+                placeholder="allergie, preferenze, dettagli sul servizio…"
+              ></textarea>
+            </div>
+            <div class="form-note">
+              La tua richiesta sarà ricevuta dal nostro team che ti confermerà
+              l'appuntamento via WhatsApp o telefono entro poche ore.
+            </div>
+            <button type="submit" class="form-submit">
+              invia la richiesta
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIANZA -->
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">
+        "Vengo da Lumière da sei anni e non cambierei per nulla al mondo. La
+        professionalità, la cura nei dettagli e l'atmosfera calda lo rendono
+        unico."
+      </p>
+      <span class="testimonial-author">Giulia M. — cliente dal 2018</span>
     </div>
 
-    <div class="form-card">
-      <h3 class="form-title">Prenota il tuo appuntamento</h3>
-      <p class="form-subtitle">Compila il form e ti ricontatteremo entro poche ore</p>
-      <form method="POST" action="prenota.php">
-        <div class="form-row">
-          <div class="form-group">
-            <label>nome *</label>
-            <input type="text" name="_nome" placeholder="il tuo nome" required>
-          </div>
-          <div class="form-group">
-            <label>cognome *</label>
-            <input type="text" name="_cognome" placeholder="il tuo cognome" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>telefono *</label>
-            <input type="tel" name="_telefono" placeholder="333 000 0000" required>
-          </div>
-          <div class="form-group">
-            <label>email</label>
-            <input type="email" name="_email" placeholder="tu@email.it">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>servizio desiderato *</label>
-          <select name="servizio_id" required>
-            <option value="">scegli il servizio</option>
-            <option value="2">piega — €20 · 30min</option>
-            <option value="3">colorazione — €60 · 90min</option>
-            <option value="4">manicure — €25 · 45min</option>
-            <option value="5">pedicure — €30 · 60min</option>
-            <option value="6">pulizia viso — €40 · 60min</option>
-            <option value="7">ceretta — €20 · 30min</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>data preferita *</label>
-            <input type="date" name="_data" required>
-          </div>
-          <div class="form-group">
-            <label>ora preferita *</label>
-            <select name="_ora" required>
-              <option value="">scegli l'ora</option>
-              <option value="09:00">09:00</option>
-              <option value="09:30">09:30</option>
-              <option value="10:00">10:00</option>
-              <option value="10:30">10:30</option>
-              <option value="11:00">11:00</option>
-              <option value="11:30">11:30</option>
-              <option value="12:00">12:00</option>
-              <option value="14:00">14:00</option>
-              <option value="14:30">14:30</option>
-              <option value="15:00">15:00</option>
-              <option value="15:30">15:30</option>
-              <option value="16:00">16:00</option>
-              <option value="16:30">16:30</option>
-              <option value="17:00">17:00</option>
-              <option value="17:30">17:30</option>
-              <option value="18:00">18:00</option>
-              <option value="18:30">18:30</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>note o richieste particolari</label>
-          <textarea name="note" placeholder="allergie, preferenze, dettagli sul servizio…"></textarea>
-        </div>
-        <div class="form-note">
-          La tua richiesta sarà ricevuta dal nostro team che ti confermerà l'appuntamento via WhatsApp o telefono entro poche ore.
-        </div>
-        <button type="submit" class="form-submit">invia la richiesta</button>
-      </form>
+    <!-- FOOTER -->
+    <footer id="contatti">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">Lu<em>mière</em></a>
+        <p>
+          Un luogo dove prendersi cura di sé diventa un'esperienza
+          indimenticabile. Benvenuta.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>servizi</h4>
+        <ul>
+          <li><a href="#prenota">capelli</a></li>
+          <li><a href="#prenota">unghie</a></li>
+          <li><a href="#prenota">viso</a></li>
+          <li><a href="#prenota">corpo</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>info</h4>
+        <ul>
+          <li><a href="#about">chi siamo</a></li>
+          <li><a href="#prenota">prenota</a></li>
+          <li><a href="#">gift card</a></li>
+          <li><a href="#">lavora con noi</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>contatti</h4>
+        <p>Via delle Rose 14<br />20121 Milano MI</p>
+        <br />
+        <p>02 1234 5678<br />info@lumiere-salone.it</p>
+        <br />
+        <p>Mar – Sab<br />9:00 – 19:00</p>
+      </div>
+    </footer>
+
+    <div class="footer-bottom">
+      <p>© 2024 Lumière Salone di Bellezza · P.IVA 12345678901</p>
+      <a href="index.php">accesso gestionale →</a>
     </div>
 
-  </div>
-</section>
+    <script>
+      const nav = document.getElementById("nav");
+      const burger = document.getElementById("burger");
+      const navMobile = document.getElementById("navMobile");
 
-<!-- TESTIMONIANZA -->
-<div class="testimonial">
-  <div class="stars">★★★★★</div>
-  <p class="testimonial-text">"Vengo da Lumière da sei anni e non cambierei per nulla al mondo. La professionalità, la cura nei dettagli e l'atmosfera calda lo rendono unico."</p>
-  <span class="testimonial-author">Giulia M. — cliente dal 2018</span>
-</div>
+      window.addEventListener(
+        "scroll",
+        () => {
+          nav.classList.toggle("scrolled", window.scrollY > 40);
+        },
+        { passive: true },
+      );
 
-<!-- FOOTER -->
-<footer id="contatti">
-  <div class="footer-brand">
-    <a href="#" class="nav-logo">Lu<em>mière</em></a>
-    <p>Un luogo dove prendersi cura di sé diventa un'esperienza indimenticabile. Benvenuta.</p>
-  </div>
-  <div class="footer-col">
-    <h4>servizi</h4>
-    <ul>
-      <li><a href="#prenota">capelli</a></li>
-      <li><a href="#prenota">unghie</a></li>
-      <li><a href="#prenota">viso</a></li>
-      <li><a href="#prenota">corpo</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h4>info</h4>
-    <ul>
-      <li><a href="#about">chi siamo</a></li>
-      <li><a href="#prenota">prenota</a></li>
-      <li><a href="#">gift card</a></li>
-      <li><a href="#">lavora con noi</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h4>contatti</h4>
-    <p>Via delle Rose 14<br>20121 Milano MI</p>
-    <br>
-    <p>02 1234 5678<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdd4d3dbd2fdd1c8d0d4d8cfd890cedcd1d2d3d893d4c9">[email&#160;protected]</a></p>
-    <br>
-    <p>Mar – Sab<br>9:00 – 19:00</p>
-  </div>
-</footer>
+      burger.addEventListener("click", () => {
+        const aperto = burger.classList.toggle("aperto");
+        navMobile.classList.toggle("aperto", aperto);
+        document.body.style.overflow = aperto ? "hidden" : "";
+      });
 
-<div class="footer-bottom">
-  <p>© 2026 Lumière Salone di Bellezza · P.IVA 12345678901</p>
-  <a href="index.php">accesso gestionale →</a>
-</div>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const nav       = document.getElementById('nav');
-  const burger    = document.getElementById('burger');
-  const navMobile = document.getElementById('navMobile');
-
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  }, { passive: true });
-
-  burger.addEventListener('click', () => {
-    const aperto = burger.classList.toggle('aperto');
-    navMobile.classList.toggle('aperto', aperto);
-    document.body.st
+      function chiudiMenu() {
+        burger.classList.remove("aperto");
+        navMobile.classList.remove("aperto");
+        document.body.style.overflow = "";
+      }
+    </script>
+  </body>
+</html>
