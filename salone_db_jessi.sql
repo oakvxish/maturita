@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mar 20, 2026 alle 08:22
+-- Creato il: Mar 23, 2026 alle 10:23
 -- Versione del server: 10.4.28-MariaDB
 -- Versione PHP: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `salone_db`
+-- Database: `db_salone`
 --
 
 -- --------------------------------------------------------
@@ -86,6 +86,90 @@ INSERT INTO `clienti` (`id`, `salone_id`, `nome`, `cognome`, `telefono`, `email`
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `impostazioni`
+--
+
+CREATE TABLE `impostazioni` (
+  `chiave` varchar(60) NOT NULL,
+  `valore` text DEFAULT NULL,
+  `salone_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dump dei dati per la tabella `impostazioni`
+--
+
+INSERT INTO `impostazioni` (`chiave`, `valore`, `salone_id`) VALUES
+('iva', '22', 1),
+('iva', '22', 2),
+('iva', '22', 3),
+('iva', '22', 4),
+('iva', '22', 5),
+('iva', '22', 7),
+('iva', '22', 8),
+('iva', '22', 9),
+('nome_salone', 'Glamour Milano', 1),
+('nome_salone', 'Capelli & Co', 2),
+('nome_salone', 'ciao blabla', 3),
+('nome_salone', 'ciao blabla', 4),
+('nome_salone', 'ciao bla bla', 5),
+('nome_salone', 'jessimiao', 7),
+('nome_salone', 'JESSI', 8),
+('nome_salone', 'nicofrocio', 9),
+('reminder_24h', '1', 1),
+('reminder_24h', '1', 2),
+('reminder_24h', '1', 3),
+('reminder_24h', '1', 4),
+('reminder_24h', '1', 5),
+('reminder_24h', '1', 7),
+('reminder_24h', '1', 8),
+('reminder_24h', '1', 9),
+('reminder_2h', '1', 1),
+('reminder_2h', '1', 2),
+('reminder_2h', '1', 3),
+('reminder_2h', '1', 4),
+('reminder_2h', '1', 5),
+('reminder_2h', '1', 7),
+('reminder_2h', '1', 8),
+('reminder_2h', '1', 9),
+('tema', 'chiaro', 1),
+('tema', 'scuro', 2),
+('tema', 'chiaro', 3),
+('tema', 'chiaro', 4),
+('tema', 'chiaro', 5),
+('tema', 'chiaro', 7),
+('tema', 'chiaro', 8),
+('tema', 'chiaro', 9),
+('valuta', 'EUR', 1),
+('valuta', 'EUR', 2),
+('valuta', 'EUR', 3),
+('valuta', 'EUR', 4),
+('valuta', 'EUR', 5),
+('valuta', 'EUR', 7),
+('valuta', 'EUR', 8),
+('valuta', 'EUR', 9);
+
+--
+-- Trigger `impostazioni`
+--
+DELIMITER $$
+CREATE TRIGGER `sync_impostazioni_to_saloni` AFTER UPDATE ON `impostazioni` FOR EACH ROW BEGIN
+    IF NEW.chiave = 'nome_salone' THEN
+        UPDATE saloni SET nome_salone = NEW.valore WHERE id = NEW.salone_id;
+    ELSEIF NEW.chiave = 'iva' THEN
+        UPDATE saloni SET iva = CAST(NEW.valore AS UNSIGNED) WHERE id = NEW.salone_id;
+    ELSEIF NEW.chiave = 'orario_apertura' THEN
+        UPDATE saloni SET orario_apertura = NEW.valore WHERE id = NEW.salone_id;
+    ELSEIF NEW.chiave = 'orario_chiusura' THEN
+        UPDATE saloni SET orario_chiusura = NEW.valore WHERE id = NEW.salone_id;
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `magazzino`
 --
 
@@ -121,19 +205,30 @@ CREATE TABLE `saloni` (
   `giorni_lavoro` varchar(100) DEFAULT 'lun,mar,mer,gio,ven,sab',
   `orario_apertura` time DEFAULT '09:00:00',
   `orario_chiusura` time DEFAULT '19:00:00',
-  `tema` varchar(20) DEFAULT 'chiaro'
+  `iva` int(11) DEFAULT 22,
+  `valuta` varchar(10) DEFAULT 'EUR',
+  `tema` varchar(20) DEFAULT 'chiaro',
+  `reminder_24h` tinyint(1) DEFAULT 1,
+  `reminder_2h` tinyint(1) DEFAULT 1,
+  `reminder_template_24h` text DEFAULT NULL,
+  `reminder_template_2h` text DEFAULT NULL,
+  `whatsapp_api_token` text DEFAULT NULL,
+  `whatsapp_api_url` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `saloni`
 --
 
-INSERT INTO `saloni` (`id`, `nome_salone`, `slug`, `giorni_lavoro`, `orario_apertura`, `orario_chiusura`, `tema`) VALUES
-(1, 'Glamour Milano', 'glamour-milano', 'lun,mar,mer,gio,ven,sab', '09:00:00', '20:00:00', 'chiaro'),
-(2, 'Capelli & Co', 'capelli-e-co', 'mar,mer,gio,ven,sab', '08:00:00', '18:00:00', 'scuro'),
-(3, 'ciao blabla', 'ciao-blabla', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 'chiaro'),
-(4, 'ciao blabla', 'ciao-blabla-1', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 'chiaro'),
-(5, 'ciao bla bla', 'ciao-bla-bla', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 'chiaro');
+INSERT INTO `saloni` (`id`, `nome_salone`, `slug`, `giorni_lavoro`, `orario_apertura`, `orario_chiusura`, `iva`, `valuta`, `tema`, `reminder_24h`, `reminder_2h`, `reminder_template_24h`, `reminder_template_2h`, `whatsapp_api_token`, `whatsapp_api_url`) VALUES
+(1, 'Glamour Milano', 'glamour-milano', 'lun,mar,mer,gio,ven,sab', '09:00:00', '20:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(2, 'Capelli & Co', 'capelli-e-co', 'mar,mer,gio,ven,sab', '08:00:00', '18:00:00', 22, 'EUR', 'scuro', 1, 1, NULL, NULL, NULL, NULL),
+(3, 'ciao blabla', 'ciao-blabla', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(4, 'ciao blabla', 'ciao-blabla-1', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(5, 'ciao bla bla', 'ciao-bla-bla', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(7, 'jessimiao', 'jessimiao', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(8, 'JESSI', 'jessi', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL),
+(9, 'nicofrocio', 'nicofrocio', 'lun,mar,mer,gio,ven,sab', '09:00:00', '19:00:00', 22, 'EUR', 'chiaro', 1, 1, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -189,25 +284,33 @@ CREATE TABLE `userdata` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `salone_id` int(11) NOT NULL DEFAULT 0
+  `salone_id` int(11) NOT NULL DEFAULT 0,
+  `nome` varchar(100) DEFAULT NULL,
+  `email` varchar(190) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `userdata`
 --
 
-INSERT INTO `userdata` (`id`, `username`, `password`, `salone_id`) VALUES
-(1, 'glamour_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
-(2, 'glamour_sara', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
-(3, 'glamour_lucia', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
-(4, 'capelli_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2),
-(5, 'capelli_marco', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2),
-(6, 'capelli_elena', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2),
-(7, '123', '$2y$10$TndLzX5syXdAIRzIjt7kk.GOvlBBjBq8cTrGJhUU9.F/R7fmaXs4S', 3),
-(8, 'ciao1', '$2y$10$soYOw/MijO42Zzz2pV6IVOtFmhZ6e1mw2lE.LDYQFQGAFWe3LhHWm', 4),
-(9, 'ciao', '$2y$10$i3IiZdv8waIrGKztZaEaBu.Pvx3M7CItX5LkMe9ytRufKS6BO6eu6', 5),
-(10, 'admin_salone5', '$2a$12$eKhOlKqBFEBVL8dCxHjiEedcjTKsK3A2c/dhVo9BV7zrr7igG8Ngi', 5),
-(11, 'staff_salone5', '$2a$12$eKhOlKqBFEBVL8dCxHjiEedcjTKsK3A2c/dhVo9BV7zrr7igG8Ngi', 5);
+INSERT INTO `userdata` (`id`, `username`, `password`, `salone_id`, `nome`, `email`) VALUES
+(1, 'glamour_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, NULL),
+(2, 'glamour_sara', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, NULL),
+(3, 'glamour_lucia', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, NULL),
+(4, 'capelli_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, NULL, NULL),
+(5, 'capelli_marco', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, NULL, NULL),
+(6, 'capelli_elena', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, NULL, NULL),
+(7, '123', '$2y$10$TndLzX5syXdAIRzIjt7kk.GOvlBBjBq8cTrGJhUU9.F/R7fmaXs4S', 3, NULL, NULL),
+(8, 'ciao1', '$2y$10$soYOw/MijO42Zzz2pV6IVOtFmhZ6e1mw2lE.LDYQFQGAFWe3LhHWm', 4, NULL, NULL),
+(9, 'ciao', '$2y$10$i3IiZdv8waIrGKztZaEaBu.Pvx3M7CItX5LkMe9ytRufKS6BO6eu6', 5, NULL, NULL),
+(10, 'admin_salone5', '$2a$12$eKhOlKqBFEBVL8dCxHjiEedcjTKsK3A2c/dhVo9BV7zrr7igG8Ngi', 5, NULL, NULL),
+(11, 'staff_salone5', '$2a$12$eKhOlKqBFEBVL8dCxHjiEedcjTKsK3A2c/dhVo9BV7zrr7igG8Ngi', 5, NULL, NULL),
+(13, 'miao', '$2y$10$cC7CjVhjHXxq6oXAOGoGDuswX71p/wQtuLx7HbxeQjWu9gawYfHgy', 7, NULL, NULL),
+(14, 'miao2@gmail.com', '$2y$10$D.PmhLeogGbBd/A4o.SZHOm4rT6xCBV6j6BLKcelJlSsg9mAnAb2e', 7, 'miao2', 'miao2@gmail.com'),
+(15, 'miaomiao', '$2y$10$f8JaQuUAWGMkJYwoT61Eqes5kcAi9LFjtNHkufnL0QdXvMFpfLt.a', 8, NULL, NULL),
+(16, 'jessimia@gmail.com', '$2y$10$LrP27f6e2rouzwK8.mvadOEe.89t9qFw46oiSvXz1KDtL0wPgnfb2', 8, 'jessi', 'jessimia@gmail.com'),
+(17, 'nico', '$2y$10$W4VbQgBwErA9hbDd19PshuGuEIWrPVFPdEDf0Y0jFmllh16.Rdr9m', 9, NULL, NULL),
+(18, 'simo@gmail.com', '$2y$10$uuZbs7PDtsSu3WJIaJZBJOJqsw9s7c8Bz3G.aLJh7PWiLBYMmhhEy', 9, 'simo', 'simo@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -218,7 +321,8 @@ INSERT INTO `userdata` (`id`, `username`, `password`, `salone_id`) VALUES
 CREATE TABLE `user_saloni` (
   `user_id` int(11) NOT NULL,
   `salone_id` int(11) NOT NULL,
-  `ruolo` enum('proprietario','collaboratore') DEFAULT 'collaboratore',
+  `ruolo` enum('proprietario','dipendente') NOT NULL DEFAULT 'dipendente',
+  `attivo` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -226,18 +330,24 @@ CREATE TABLE `user_saloni` (
 -- Dump dei dati per la tabella `user_saloni`
 --
 
-INSERT INTO `user_saloni` (`user_id`, `salone_id`, `ruolo`, `created_at`) VALUES
-(1, 1, 'proprietario', '2026-03-13 09:47:46'),
-(2, 1, 'collaboratore', '2026-03-13 09:47:46'),
-(3, 1, 'collaboratore', '2026-03-13 09:47:46'),
-(4, 2, 'proprietario', '2026-03-13 09:47:46'),
-(5, 2, 'collaboratore', '2026-03-13 09:47:46'),
-(6, 2, 'collaboratore', '2026-03-13 09:47:46'),
-(7, 3, 'proprietario', '2026-03-13 09:52:56'),
-(8, 4, 'proprietario', '2026-03-13 09:53:10'),
-(9, 5, 'proprietario', '2026-03-13 09:53:35'),
-(10, 5, 'proprietario', '2026-03-13 09:55:34'),
-(11, 5, 'collaboratore', '2026-03-13 09:55:34');
+INSERT INTO `user_saloni` (`user_id`, `salone_id`, `ruolo`, `attivo`, `created_at`) VALUES
+(1, 1, 'proprietario', 1, '2026-03-13 09:47:46'),
+(2, 1, '', 1, '2026-03-13 09:47:46'),
+(3, 1, '', 1, '2026-03-13 09:47:46'),
+(4, 2, 'proprietario', 1, '2026-03-13 09:47:46'),
+(5, 2, '', 1, '2026-03-13 09:47:46'),
+(6, 2, '', 1, '2026-03-13 09:47:46'),
+(7, 3, 'proprietario', 1, '2026-03-13 09:52:56'),
+(8, 4, 'proprietario', 1, '2026-03-13 09:53:10'),
+(9, 5, 'proprietario', 1, '2026-03-13 09:53:35'),
+(10, 5, 'proprietario', 1, '2026-03-13 09:55:34'),
+(11, 5, '', 1, '2026-03-13 09:55:34'),
+(13, 7, 'proprietario', 1, '2026-03-18 12:13:20'),
+(14, 7, 'dipendente', 1, '2026-03-18 12:14:00'),
+(15, 8, 'proprietario', 1, '2026-03-18 12:18:19'),
+(16, 8, 'dipendente', 0, '2026-03-18 12:19:14'),
+(17, 9, 'proprietario', 1, '2026-03-20 06:16:52'),
+(18, 9, 'dipendente', 1, '2026-03-20 06:17:40');
 
 --
 -- Indici per le tabelle scaricate
@@ -258,6 +368,13 @@ ALTER TABLE `appuntamenti`
 ALTER TABLE `clienti`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_clienti_sal` (`salone_id`);
+
+--
+-- Indici per le tabelle `impostazioni`
+--
+ALTER TABLE `impostazioni`
+  ADD PRIMARY KEY (`chiave`,`salone_id`),
+  ADD UNIQUE KEY `uq_salone_chiave` (`salone_id`,`chiave`);
 
 --
 -- Indici per le tabelle `magazzino`
@@ -286,14 +403,16 @@ ALTER TABLE `servizi`
 ALTER TABLE `userdata`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD KEY `fk_userdata_salone` (`salone_id`);
+  ADD UNIQUE KEY `uq_userdata_email` (`email`),
+  ADD KEY `fk_userdata_salone` (`salone_id`),
+  ADD KEY `idx_userdata_email_username` (`email`,`username`);
 
 --
 -- Indici per le tabelle `user_saloni`
 --
 ALTER TABLE `user_saloni`
   ADD PRIMARY KEY (`user_id`,`salone_id`),
-  ADD KEY `fk_pivot_salone` (`salone_id`);
+  ADD KEY `idx_user_saloni_salone_ruolo_attivo` (`salone_id`,`ruolo`,`attivo`);
 
 --
 -- AUTO_INCREMENT per le tabelle scaricate
@@ -321,7 +440,7 @@ ALTER TABLE `magazzino`
 -- AUTO_INCREMENT per la tabella `saloni`
 --
 ALTER TABLE `saloni`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT per la tabella `servizi`
@@ -333,7 +452,7 @@ ALTER TABLE `servizi`
 -- AUTO_INCREMENT per la tabella `userdata`
 --
 ALTER TABLE `userdata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Limiti per le tabelle scaricate
@@ -352,6 +471,12 @@ ALTER TABLE `appuntamenti`
 --
 ALTER TABLE `clienti`
   ADD CONSTRAINT `fk_clienti_salone` FOREIGN KEY (`salone_id`) REFERENCES `saloni` (`id`) ON DELETE CASCADE;
+
+--
+-- Limiti per la tabella `impostazioni`
+--
+ALTER TABLE `impostazioni`
+  ADD CONSTRAINT `fk_impostazioni_salone` FOREIGN KEY (`salone_id`) REFERENCES `saloni` (`id`) ON DELETE CASCADE;
 
 --
 -- Limiti per la tabella `magazzino`
