@@ -15,18 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = $conn->real_escape_string(trim($_POST['email']    ?? ''));
     $tag      = $conn->real_escape_string($_POST['tag']           ?? 'normale');
     $note     = $conn->real_escape_string($_POST['note']          ?? '');
-    $chat_id  = $conn->real_escape_string(trim($_POST['whatsapp_chat_id'] ?? ''));
 
     if (!$nome || !$cognome) {
       $errore = 'nome e cognome obbligatori';
     } elseif ($azione === 'crea') {
-      $conn->query("INSERT INTO clienti (salone_id,nome,cognome,telefono,email,tag,note,whatsapp_chat_id)
-                          VALUES ($sid,'$nome','$cognome','$telefono','$email','$tag','$note','$chat_id')");
+      $conn->query("INSERT INTO clienti (salone_id,nome,cognome,telefono,email,tag,note)
+                          VALUES ($sid,'$nome','$cognome','$telefono','$email','$tag','$note')");
       $messaggio = 'cliente aggiunto';
     } else {
       $id = (int)$_POST['id'];
       $conn->query("UPDATE clienti SET nome='$nome',cognome='$cognome',telefono='$telefono',
-                          email='$email',tag='$tag',note='$note',whatsapp_chat_id='$chat_id'
+                          email='$email',tag='$tag',note='$note'
                           WHERE id=$id AND salone_id=$sid");
       $messaggio = 'cliente aggiornato';
     }
@@ -96,10 +95,6 @@ require 'layout_top.php';
               <option value="<?php echo $t ?>" <?php echo ($modifica['tag'] ?? 'normale') === $t ? 'selected' : '' ?>><?php echo $t ?></option>
             <?php endforeach ?>
           </select>
-        </div>
-        <div>
-          <label>whatsapp chat id</label>
-          <input type="text" name="whatsapp_chat_id" placeholder="39333...@c.us" value="<?php echo htmlspecialchars($modifica['whatsapp_chat_id'] ?? '') ?>">
         </div>
       </div>
       <label>note</label>

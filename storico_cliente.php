@@ -32,9 +32,6 @@ foreach ($storico as $r) {
   }
 }
 
-$messaggi = $conn->query("
-    SELECT * FROM whatsapp_log WHERE cliente_id=$id AND salone_id=$sid ORDER BY inviato_il DESC LIMIT 20
-")->fetch_all(MYSQLI_ASSOC);
 
 require 'layout_top.php';
 ?>
@@ -102,26 +99,5 @@ require 'layout_top.php';
       </table>
     <?php endif ?>
   </div>
-
-  <div class="card">
-    <h3 style="font-size:1rem;color:var(--text);margin-bottom:14px">ultimi messaggi whatsapp</h3>
-    <?php if (!$messaggi): ?>
-      <p style="color:var(--text-muted);font-size:.88rem">nessun messaggio inviato</p>
-    <?php else: ?>
-      <?php foreach ($messaggi as $m): ?>
-        <div style="border-bottom:1px solid var(--border);padding:10px 0;font-size:.85rem">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span class="badge badge-<?php echo $m['stato'] === 'inviato' ? 'confermato' : 'annullato' ?>"><?php echo $m['tipo'] ?></span>
-            <span style="color:var(--text-muted)"><?php echo date('d/m H:i', strtotime($m['inviato_il'])) ?></span>
-          </div>
-          <div style="color:var(--text-muted)"><?php echo htmlspecialchars(mb_substr($m['messaggio'], 0, 120)) ?><?php echo strlen($m['messaggio']) > 120 ? '…' : '' ?></div>
-        </div>
-      <?php endforeach ?>
-    <?php endif ?>
-    <div style="margin-top:12px">
-      <a href="whatsapp.php?cliente_id=<?php echo $id ?>" class="btn btn-piccolo">💬 invia messaggio</a>
-    </div>
-  </div>
-</div>
 
 <?php require 'layout_bottom.php'; ?>

@@ -5,7 +5,7 @@ require 'auth.php';
 $messaggio = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $campi = ['nome_salone', 'iva', 'valuta', 'whatsapp_api_url', 'whatsapp_api_token', 'reminder_24h', 'reminder_2h', 'tema'];
+  $campi = ['nome_salone', 'iva', 'valuta', 'tema'];
   foreach ($campi as $k) {
     $chiave = $conn->real_escape_string($k);
     $val    = $conn->real_escape_string(trim($_POST[$k] ?? ''));

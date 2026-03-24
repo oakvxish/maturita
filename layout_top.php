@@ -74,7 +74,9 @@ $voci_menu = [
         }
 
         .sidebar .logo {
-            color: var(--accent);
+            background: linear-gradient(39deg, rgba(127, 17, 224, 1) 0%, rgba(177, 98, 196, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
             font-size: 1rem;
             font-weight: 700;
             padding: 0 20px 6px;
