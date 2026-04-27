@@ -1,6 +1,6 @@
-<?php
-require 'db.php';
-require 'auth.php';
+﻿<?php
+require __DIR__ . '/includes/db.php';
+require __DIR__ . '/includes/auth.php';
 
 require_proprietario();
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtMembership->close();
 
                     if ($membership) {
-                        throw new RuntimeException('questo account è già collegato a questo salone');
+                        throw new RuntimeException('questo account Ã¨ giÃ  collegato a questo salone');
                     }
 
                     $stmtAggiorna = $conn->prepare(
@@ -140,7 +140,7 @@ if ($resultUtenti) {
     }
 }
 
-require 'layout_top.php';
+require __DIR__ . '/includes/layout_top.php';
 ?>
 
 <div class="titolo-pagina">utenti del salone</div>
@@ -163,10 +163,10 @@ require 'layout_top.php';
             <input type="email" name="email" required>
             <label>password iniziale</label>
             <input type="password" name="password" required>
-            <button type="submit" class="btn">➕ crea account dipendente</button>
+            <button type="submit" class="btn">crea account dipendente</button>
         </form>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">
-            il dipendente accederà con email e password impostate da te.
+            il dipendente accederÃ  con email e password impostate da te. Dopo il primo accesso potrÃ  generare i propri recovery code da impostazioni.
         </p>
     </div>
 
@@ -228,4 +228,6 @@ require 'layout_top.php';
     </div>
 </div>
 
-<?php require 'layout_bottom.php'; ?>
+<?php require __DIR__ . '/includes/layout_bottom.php'; ?>
+
+

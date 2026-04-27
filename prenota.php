@@ -1,516 +1,328 @@
-<!DOCTYPE html>
-<?php
-require_once __DIR__ . '/db.php';
-
-// Identifica il salone tramite ?s=slug
-$slug = $conn->real_escape_string(trim($_GET['s'] ?? ''));
-if (!$slug) {
-  die('<p style="font-family:sans-serif;padding:40px">Parametro salone mancante. Usa <code>?s=slug-salone</code></p>');
+﻿<?php
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/booking_slots.php';
+/**
+ * Wrapper applicativo per leggere la capienza parallela del salone.
+ *
+ * @param mysqli $conn Connessione database.
+ * @param int|string $sid ID salone.
+ * @return int Capienza slot.
+ */
+function beautifier_capienza_prenota($conn, $sid)
+{
+    return capienza_slot_comune($conn, $sid);
 }
 
-$salone = $conn->query("SELECT * FROM saloni WHERE slug='$slug'")->fetch_assoc();
+/**
+ * Wrapper per verificare conflitti durante prenotazione pubblica.
+ *
+ * @param mysqli $conn Connessione database.
+ * @param int|string $sid ID salone.
+ * @param int|string $servizio_id ID servizio.
+ * @param string $data_ora_sql Datetime richiesto.
+ * @return array<string,mixed> Esito conflitti dal modulo comune.
+ */
+function beautifier_trova_conflitti_prenota($conn, $sid, $servizio_id, $data_ora_sql)
+{
+    return trova_conflitti_slot_comuni($conn, $sid, $servizio_id, $data_ora_sql);
+}
+
+/**
+ * Wrapper per calcolare slot liberi mostrati al cliente.
+ *
+ * @param mysqli $conn Connessione database.
+ * @param int|string $sid ID salone.
+ * @param int|string $servizio_id ID servizio.
+ * @param string $data_sql Data `YYYY-MM-DD`.
+ * @param int $limite Numero massimo slot da proporre.
+ * @return array<int,string> Lista orari `HH:MM`.
+ */
+function beautifier_slot_liberi_prenota($conn, $sid, $servizio_id, $data_sql, $limite = 10)
+{
+    return slot_liberi_comuni($conn, $sid, $servizio_id, $data_sql, $limite);
+}
+
+$salone_id = (int) ($_GET['id'] ?? $_POST['salone_id'] ?? 0);
+$salone = null;
+
+if ($salone_id > 0) {
+    $salone = $conn->query("SELECT id, nome_salone FROM saloni WHERE id=$salone_id LIMIT 1")->fetch_assoc();
+}
+
 if (!$salone) {
-  die('<p style="font-family:sans-serif;padding:40px">Salone non trovato.</p>');
+    http_response_code(404);
+    ?>
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>prenotazione</title>
+                    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Victor+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/salone.css">
+</head>
+    <body class="auth-page" data-theme="scuro">
+        
+        <div class="wrap"><div class="box">
+            <div class="eyebrow">prenotazione</div>
+            <h1>ID salone non valido</h1>
+            <p>Inserisci un ID salone valido, ad esempio <strong>prenota.php?id=1</strong>.</p>
+            <form method="get">
+                <label>id salone</label>
+                <input type="number" name="id" min="1" required>
+                <button type="submit">apri prenotazione</button>
+            </form>
+        </div></div>
+    </body>
+    </html>
+    <?php
+    exit;
 }
 
-$sid         = (int)$salone['id'];
+$sid = (int) $salone['id'];
 $nome_salone = htmlspecialchars($salone['nome_salone']);
+$tema_prenota = 'scuro';
+$servizi = [];
+$resultServizi = $conn->query("SELECT id, nome, categoria, durata_minuti, prezzo FROM servizi WHERE salone_id=$sid ORDER BY categoria, nome");
+if ($resultServizi) {
+    while ($row = $resultServizi->fetch_assoc()) {
+        $servizi[] = $row;
+    }
+}
 
-// Recupera servizi del salone
-$servizi = $conn->query("SELECT id,nome,categoria,durata_minuti,prezzo FROM servizi WHERE salone_id=$sid ORDER BY categoria,nome")->fetch_all(MYSQLI_ASSOC);
-
-$errore  = '';
+$errore = '';
 $successo = false;
+$slot_suggeriti = [];
+$capienza_prenotazioni = beautifier_capienza_prenota($conn, $sid);
+$nome = trim($_POST['_nome'] ?? '');
+$cognome = trim($_POST['_cognome'] ?? '');
+$telefono = trim($_POST['_telefono'] ?? '');
+$email = trim($_POST['_email'] ?? '');
+$svid = (int) ($_POST['servizio_id'] ?? 0);
+$data_raw = trim($_POST['_data'] ?? '');
+$ora = trim($_POST['_ora'] ?? '');
+$note = trim($_POST['note'] ?? '');
+$servizio_out = '';
+$data_fmt = '';
+$motivo_data_slot = $data_raw !== '' ? motivo_data_non_prenotabile($data_raw) : '';
+$data_min_prenotazione = date('Y-m-d');
+$fasce_prenotazione_testo = testo_fasce_slot_comuni();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $nome     = trim($_POST['_nome']     ?? '');
-  $cognome  = trim($_POST['_cognome']  ?? '');
-  $telefono = trim($_POST['_telefono'] ?? '');
-  $email    = trim($_POST['_email']    ?? '');
-  $svid     = (int)($_POST['servizio_id'] ?? 0);
-  $data_raw = trim($_POST['_data']     ?? '');
-  $ora      = trim($_POST['_ora']      ?? '');
-  $note     = trim($_POST['note']      ?? '');
-
-  if (!$nome || !$cognome || !$svid || !$data_raw) {
-    $errore = 'compila tutti i campi obbligatori';
-  } else {
-    // Verifica servizio appartiene al salone
-    $srv = $conn->query("SELECT id FROM servizi WHERE id=$svid AND salone_id=$sid")->fetch_assoc();
-    if (!$srv) {
-      $errore = 'servizio non valido';
+    if ($nome === '' || $cognome === '' || $svid <= 0 || $data_raw === '') {
+        $errore = 'compila i campi obbligatori';
+    } elseif ($motivo_data_slot !== '') {
+        $errore = $motivo_data_slot;
+    } elseif ($ora === '') {
+        $errore = 'scegli uno degli orari liberi suggeriti';
     } else {
-      // Crea o aggiorna cliente
-      $n  = $conn->real_escape_string($nome);
-      $co = $conn->real_escape_string($cognome);
-      $te = $conn->real_escape_string($telefono);
-      $em = $conn->real_escape_string($email);
-      $no = $conn->real_escape_string($note);
+        $srv = $conn->query("SELECT id, nome FROM servizi WHERE id=$svid AND salone_id=$sid")->fetch_assoc();
+        if (!$srv) {
+            $errore = 'servizio non valido';
+        } else {
+            $slot_validi = beautifier_slot_liberi_prenota($conn, $sid, $svid, $data_raw);
+            if (!in_array($ora, $slot_validi, true)) {
+                $errore = 'scegli uno degli orari liberi suggeriti';
+                $slot_suggeriti = $slot_validi;
+            } else {
+            $n = $conn->real_escape_string($nome);
+            $co = $conn->real_escape_string($cognome);
+            $te = $conn->real_escape_string($telefono);
+            $em = $conn->real_escape_string($email);
+            $no = $conn->real_escape_string($note);
+            $cliente = null;
 
-      // Cerca cliente esistente per telefono o email
-      $cliente = null;
-      if ($telefono) {
-        $cliente = $conn->query("SELECT id FROM clienti WHERE salone_id=$sid AND telefono='$te'")->fetch_assoc();
-      }
-      if (!$cliente && $email) {
-        $cliente = $conn->query("SELECT id FROM clienti WHERE salone_id=$sid AND email='$em'")->fetch_assoc();
-      }
+            if ($telefono !== '') {
+                $cliente = $conn->query("SELECT id FROM clienti WHERE salone_id=$sid AND telefono='$te' LIMIT 1")->fetch_assoc();
+            }
+            if (!$cliente && $email !== '') {
+                $cliente = $conn->query("SELECT id FROM clienti WHERE salone_id=$sid AND email='$em' LIMIT 1")->fetch_assoc();
+            }
 
-      if ($cliente) {
-        $cid = (int)$cliente['id'];
-      } else {
-        $conn->query("INSERT INTO clienti (salone_id,nome,cognome,telefono,email,note) VALUES ($sid,'$n','$co','$te','$em','$no')");
-        $cid = (int)$conn->insert_id;
-      }
+            if ($cliente) {
+                $cid = (int) $cliente['id'];
+                $conn->query("UPDATE clienti SET nome='$n', cognome='$co', telefono='$te', email='$em', note='$no' WHERE id=$cid AND salone_id=$sid");
+            } else {
+                $conn->query("INSERT INTO clienti (salone_id,nome,cognome,telefono,email,note) VALUES ($sid,'$n','$co','$te','$em','$no')");
+                $cid = (int) $conn->insert_id;
+            }
 
-      // Crea appuntamento in attesa
-      $data_ora = $conn->real_escape_string($data_raw . ($ora ? ' ' . $ora . ':00' : ' 09:00:00'));
-      $conn->query("INSERT INTO appuntamenti (salone_id,cliente_id,servizio_id,data_ora,stato,note)
-                          VALUES ($sid,$cid,$svid,'$data_ora','attesa','$no')");
+            $ora_sql = $ora !== '' ? $ora . ':00' : '09:00:00';
+            $data_ora_pulita = $data_raw . ' ' . $ora_sql;
+            $esito_disponibilita = beautifier_trova_conflitti_prenota($conn, $sid, $svid, $data_ora_pulita);
 
-      $successo = true;
-      // Passa ai dettagli per la conferma
-      $nome_out     = htmlspecialchars($nome);
-      $cognome_out  = htmlspecialchars($cognome);
-      $telefono_out = htmlspecialchars($telefono);
-      $ora_out      = htmlspecialchars($ora);
-      $note_out     = htmlspecialchars($note);
-      $servizio_out = htmlspecialchars($conn->query("SELECT nome FROM servizi WHERE id=$svid")->fetch_assoc()['nome'] ?? '');
+            if ($esito_disponibilita['conflitti']) {
+                $errore = 'orario non disponibile: la capienza parallela del salone e piena in quella fascia. scegli un altro orario.';
+                $slot_suggeriti = beautifier_slot_liberi_prenota($conn, $sid, $svid, $data_raw);
+            } else {
+                $data_ora = $conn->real_escape_string($data_ora_pulita);
+                $conn->query("INSERT INTO appuntamenti (salone_id,cliente_id,servizio_id,data_ora,stato,note) VALUES ($sid,$cid,$svid,'$data_ora','attesa','$no')");
 
-      $ts = strtotime($data_raw);
-      $giorni = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
-      $mesi   = ['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-      $data_fmt = $giorni[date('w', $ts)] . ' ' . date('j', $ts) . ' ' . $mesi[(int)date('n', $ts)] . ' ' . date('Y', $ts);
+                $successo = true;
+                $servizio_out = htmlspecialchars($srv['nome']);
+                $ts = strtotime($data_raw);
+                $giorni = ['domenica','lunedÃ¬','martedÃ¬','mercoledÃ¬','giovedÃ¬','venerdÃ¬','sabato'];
+                $mesi = ['','gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+                $data_fmt = $giorni[(int) date('w', $ts)] . ' ' . date('j', $ts) . ' ' . $mesi[(int) date('n', $ts)] . ' ' . date('Y', $ts);
+            }
+            }
+        }
     }
-  }
+}
+
+if (!$slot_suggeriti && $svid > 0 && $data_raw !== '' && $motivo_data_slot === '') {
+    $slot_suggeriti = beautifier_slot_liberi_prenota($conn, $sid, $svid, $data_raw);
 }
 ?>
+<!DOCTYPE html>
 <html lang="it">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Prenota — <?php echo $nome_salone ?></title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    :root {
-      --cream: #f9f4ed;
-      --warm: #fffdf9;
-      --charcoal: #1c1917;
-      --muted: #78716c;
-      --gold: #b5924c;
-      --gold-l: #e8d5b0;
-      --border: #e8e0d5
-    }
-
-    body {
-      font-family: 'Jost', sans-serif;
-      background: var(--warm);
-      color: var(--charcoal);
-      min-height: 100vh
-    }
-
-    nav {
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 clamp(20px, 5vw, 60px);
-      background: rgba(249, 244, 237, .97);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100
-    }
-
-    .nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 300;
-      letter-spacing: .1em;
-      color: var(--charcoal);
-      text-decoration: none
-    }
-
-    .nav-logo em {
-      font-style: italic;
-      color: var(--gold)
-    }
-
-    .wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: clamp(32px, 6vw, 72px) clamp(20px, 4vw, 40px)
-    }
-
-    h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 300;
-      line-height: 1.1;
-      margin-bottom: 8px
-    }
-
-    h1 em {
-      font-style: italic;
-      color: var(--gold)
-    }
-
-    .sub {
-      color: var(--muted);
-      font-size: .9rem;
-      margin-bottom: 36px;
-      font-weight: 300
-    }
-
-    .form-card {
-      background: var(--warm);
-      border: 1px solid var(--border);
-      padding: clamp(24px, 4vw, 44px)
-    }
-
-    .sezione {
-      font-size: .65rem;
-      letter-spacing: .3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 16px;
-      margin-top: 28px
-    }
-
-    .sezione:first-child {
-      margin-top: 0
-    }
-
-    .riga {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px
-    }
-
-    .campo {
-      margin-bottom: 20px
-    }
-
-    .campo label {
-      display: block;
-      font-size: .7rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px
-    }
-
-    .campo input,
-    .campo select,
-    .campo textarea {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid var(--border);
-      background: var(--cream);
-      color: var(--charcoal);
-      font-family: inherit;
-      font-size: .9rem;
-      transition: .2s
-    }
-
-    .campo input:focus,
-    .campo select:focus,
-    .campo textarea:focus {
-      border-color: var(--gold);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(181, 146, 76, .1)
-    }
-
-    .campo small {
-      font-size: .75rem;
-      color: var(--muted);
-      margin-top: 5px;
-      display: block
-    }
-
-    .btn-prenota {
-      width: 100%;
-      padding: 16px;
-      background: var(--charcoal);
-      color: var(--cream);
-      border: none;
-      font-family: inherit;
-      font-size: .75rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: .25s;
-      margin-top: 8px
-    }
-
-    .btn-prenota:hover {
-      background: var(--gold)
-    }
-
-    .err {
-      background: rgba(239, 68, 68, .08);
-      border: 1px solid rgba(239, 68, 68, .3);
-      color: #991b1b;
-      padding: 14px;
-      font-size: .88rem;
-      margin-bottom: 24px
-    }
-
-    /* Conferma */
-    .conferma {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      padding: clamp(28px, 4vw, 48px);
-      text-align: center
-    }
-
-    .check {
-      width: 54px;
-      height: 54px;
-      background: var(--gold);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 1.4rem
-    }
-
-    .conferma h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 300;
-      margin-bottom: 10px
-    }
-
-    .conferma h2 em {
-      font-style: italic;
-      color: var(--gold)
-    }
-
-    .conferma p {
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.7;
-      font-weight: 300;
-      margin-bottom: 24px
-    }
-
-    .dettagli {
-      background: var(--warm);
-      border: 1px solid var(--border);
-      padding: 22px;
-      text-align: left;
-      margin-bottom: 24px
-    }
-
-    .det-row {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 14px
-    }
-
-    .det-row:last-child {
-      margin-bottom: 0
-    }
-
-    .det-label {
-      font-size: .65rem;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      color: var(--muted)
-    }
-
-    .det-val {
-      font-size: .92rem;
-      color: var(--charcoal)
-    }
-
-    .btn-back {
-      display: inline-block;
-      padding: 13px 28px;
-      background: var(--charcoal);
-      color: var(--cream);
-      text-decoration: none;
-      font-size: .7rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      transition: .2s
-    }
-
-    .btn-back:hover {
-      background: var(--gold)
-    }
-
-    footer {
-      margin-top: 60px;
-      padding: 20px clamp(20px, 5vw, 60px);
-      border-top: 1px solid var(--border);
-      font-size: .75rem;
-      color: var(--muted);
-      text-align: center
-    }
-
-    @media(max-width:600px) {
-      .riga {
-        grid-template-columns: 1fr
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prenota - <?php echo $nome_salone ?></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Victor+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/salone.css">
 </head>
-
-<body>
-
-  <nav>
-    <span class="nav-logo"><?php echo "<strong>" . $nome_salone . "</strong>"   ?></span>
-  </nav>
-
-  <div class="wrap">
-
-    <?php if ($successo): ?>
-      <!-- CONFERMA -->
-      <div class="conferma">
-        <div class="check">✓</div>
-        <h2>Grazie, <em><?php echo $nome_out ?></em>.</h2>
-        <p>La tua richiesta è stata ricevuta. Ti contatteremo presto per confermarla.</p>
-        <div class="dettagli">
-          <div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px">riepilogo prenotazione</div>
-          <div class="det-row">
-            <div style="flex-shrink:0">✦</div>
-            <div>
-              <div class="det-label">trattamento</div>
-              <div class="det-val"><?php echo $servizio_out ?></div>
+<body data-theme="<?php echo htmlspecialchars($tema_prenota); ?>">
+    
+    <div class="hero">
+        <div class="hero-inner">
+            <div class="hero-head">
+                <div class="hero-mark" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="6.75" stroke="currentColor" stroke-width="1.25"/>
+                        <path d="M10 2.75V8.25" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="hero-label"><?php echo $nome_salone ?></div>
             </div>
-          </div>
-          <div class="det-row">
-            <div style="flex-shrink:0">📅</div>
-            <div>
-              <div class="det-label">data</div>
-              <div class="det-val"><?php echo $data_fmt ?></div>
-            </div>
-          </div>
-          <?php if ($ora_out): ?>
-            <div class="det-row">
-              <div style="flex-shrink:0">⏰</div>
-              <div>
-                <div class="det-label">ora richiesta</div>
-                <div class="det-val"><?php echo $ora_out ?></div>
-              </div>
-            </div>
-          <?php endif ?>
-          <div class="det-row">
-            <div style="flex-shrink:0">👤</div>
-            <div>
-              <div class="det-label">cliente</div>
-              <div class="det-val"><?php echo $nome_out . ' ' . $cognome_out ?></div>
-            </div>
-          </div>
-          <?php if ($telefono_out): ?>
-            <div class="det-row">
-              <div style="flex-shrink:0">📞</div>
-              <div>
-                <div class="det-label">telefono</div>
-                <div class="det-val"><?php echo $telefono_out ?></div>
-              </div>
-            </div>
-          <?php endif ?>
+            <h1>Prenota il tuo appuntamento.</h1>
+            <p class="hero-sub">in questo salone si possono gestire fino a <?php echo $capienza_prenotazioni ?> prenotazioni nello stesso orario, in base agli account attivi.</p>
         </div>
-        <a href="prenota.php?s=<?php echo urlencode($slug) ?>" class="btn-back">nuova prenotazione</a>
-      </div>
+    </div>
 
-    <?php else: ?>
-      <!-- FORM -->
-      <h1>Prenota il tuo <em>appuntamento</em></h1>
-      <p class="sub">presso <?php echo "<strong>" . $nome_salone . "</strong>" ?></p>
+    <div class="page">
+        <?php if ($successo): ?>
+            <div class="avviso ok">Richiesta ricevuta. Il tuo appuntamento e stato registrato in attesa di conferma.</div>
+        <?php endif; ?>
+        <?php if ($errore): ?>
+            <div class="avviso err"><?php echo htmlspecialchars($errore) ?></div>
+        <?php endif; ?>
 
-      <?php if ($errore): ?><div class="err">⚠ <?php echo htmlspecialchars($errore) ?></div><?php endif ?>
+        <div class="grid">
+            <div class="card">
+                <?php if ($successo): ?>
+                    <div class="eyebrow">richiesta inviata</div>
+                    <h2>Grazie, <?php echo htmlspecialchars($nome) ?>.</h2>
+                    <p class="sub">Abbiamo registrato la tua richiesta presso <?php echo $nome_salone ?>. Qui trovi il riepilogo dei dati inviati.</p>
+                    <div class="summary">
+                        <div><strong>Cliente</strong><br><?php echo htmlspecialchars(trim($nome . ' ' . $cognome)) ?></div>
+                        <div><strong>Servizio</strong><br><?php echo $servizio_out ?></div>
+                        <div><strong>Data</strong><br><?php echo htmlspecialchars($data_fmt ?: '-') ?></div>
+                        <div><strong>Orario</strong><br><?php echo htmlspecialchars($ora !== '' ? $ora : '09:00') ?></div>
+                        <div><strong>Contatto</strong><br><?php echo htmlspecialchars($telefono !== '' ? $telefono : ($email !== '' ? $email : '-')) ?></div>
+                        <div><strong>Note</strong><br><?php echo nl2br(htmlspecialchars($note !== '' ? $note : '-')) ?></div>
+                    </div>
+                    <div style="margin-top:20px">
+                        <a href="prenota.php?id=<?php echo $sid ?>" class="btn alt">nuova prenotazione</a>
+                    </div>
+                <?php else: ?>
+                    <div class="eyebrow">prenotazione online</div>
+                    <h2>Compila la richiesta.</h2>
+                    <p class="sub">Seleziona il servizio, indica una data tra martedi e sabato e scegli uno degli orari liberi calcolati in base alla durata reale del trattamento.</p>
+                    <form method="post" action="prenota.php?id=<?php echo $sid ?>">
+                        <input type="hidden" name="salone_id" value="<?php echo $sid ?>">
+                        <div class="row">
+                            <div>
+                                <label>nome</label>
+                                <input type="text" name="_nome" value="<?php echo htmlspecialchars($nome) ?>" required>
+                            </div>
+                            <div>
+                                <label>cognome</label>
+                                <input type="text" name="_cognome" value="<?php echo htmlspecialchars($cognome) ?>" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <label>telefono</label>
+                                <input type="tel" name="_telefono" value="<?php echo htmlspecialchars($telefono) ?>">
+                            </div>
+                            <div>
+                                <label>email</label>
+                                <input type="email" name="_email" value="<?php echo htmlspecialchars($email) ?>">
+                                <div style="font-size:.82rem;color:#6f655d;margin-top:8px;line-height:1.6">facoltativa, utile come recapito secondario e per ritrovare piu facilmente la tua scheda cliente.</div>
+                            </div>
+                        </div>
+                        <label>servizio</label>
+                        <select name="servizio_id" required>
+                            <option value="">seleziona</option>
+                            <?php foreach ($servizi as $servizio): ?>
+                                <option value="<?php echo (int) $servizio['id'] ?>" <?php echo $svid === (int) $servizio['id'] ? 'selected' : '' ?>><?php echo htmlspecialchars($servizio['nome']) ?> - <?php echo (int) $servizio['durata_minuti'] ?> min - â‚¬<?php echo number_format((float) $servizio['prezzo'], 2, ',', '.') ?></option>
+                            <?php endforeach ?>
+                        </select>
+                        <div class="row">
+                            <div>
+                                <label>data</label>
+                                <input type="date" name="_data" value="<?php echo htmlspecialchars($data_raw) ?>" min="<?php echo htmlspecialchars($data_min_prenotazione) ?>" required>
+                                <?php if ($motivo_data_slot !== '' && $data_raw !== ''): ?>
+                                    <div class="helper-text mt-8"><?php echo htmlspecialchars($motivo_data_slot) ?></div>
+                                <?php else: ?>
+                                    <div class="helper-text mt-8">fasce prenotabili: <?php echo htmlspecialchars($fasce_prenotazione_testo) ?>, da martedi a sabato.</div>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <label>ora</label>
+                                <input type="time" name="_ora" value="<?php echo htmlspecialchars($ora) ?>" required>
+                                <div class="helper-text mt-8">usa uno degli orari suggeriti sotto: il sistema accetta solo slot realmente disponibili.</div>
+                            </div>
+                        </div>
+                        <?php if ($slot_suggeriti): ?>
+                            <div class="availability-box compact-box">
+                                <div class="eyebrow">disponibilita calcolata</div>
+                                <div class="availability-title">orari liberi per questo servizio</div>
+                                <div class="slot-list">
+                                    <?php foreach ($slot_suggeriti as $slot): ?>
+                                        <span class="slot-chip"><?php echo htmlspecialchars($slot) ?></span>
+                                    <?php endforeach ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <label>note</label>
+                        <textarea name="note"><?php echo htmlspecialchars($note) ?></textarea>
+                        <button type="submit" class="btn">invia richiesta</button>
+                    </form>
+                <?php endif; ?>
+            </div>
 
-      <?php if (!$servizi): ?>
-        <div class="form-card">
-          <p style="color:var(--muted)">Nessun servizio disponibile al momento.</p>
+            <div class="card">
+                <div class="eyebrow">servizi disponibili</div>
+                <h2><?php echo $nome_salone ?></h2>
+                <p class="sub">Il link pubblico usa l'id del salone: <strong><?php echo $sid ?></strong>.</p>
+                <?php if (!$servizi): ?>
+                    <p class="sub">Nessun servizio disponibile al momento.</p>
+                <?php else: ?>
+                    <div class="service-list">
+                        <?php foreach ($servizi as $servizio): ?>
+                            <div class="service-item">
+                                <div class="service-name"><?php echo htmlspecialchars($servizio['nome']) ?></div>
+                                <div class="service-meta"><?php echo htmlspecialchars($servizio['categoria']) ?> Â· <?php echo (int) $servizio['durata_minuti'] ?> min Â· â‚¬<?php echo number_format((float) $servizio['prezzo'], 2, ',', '.') ?></div>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-      <?php else: ?>
-        <div class="form-card">
-          <form method="POST" action="prenota.php?s=<?php echo urlencode($slug) ?>">
+    </div>
 
-            <div class="sezione">i tuoi dati</div>
-            <div class="riga">
-              <div class="campo">
-                <label>nome *</label>
-                <input type="text" name="_nome" value="<?php echo htmlspecialchars($_POST['_nome'] ?? '') ?>" required>
-              </div>
-              <div class="campo">
-                <label>cognome *</label>
-                <input type="text" name="_cognome" value="<?php echo htmlspecialchars($_POST['_cognome'] ?? '') ?>" required>
-              </div>
-            </div>
-            <div class="riga">
-              <div class="campo">
-                <label>telefono</label>
-                <input type="tel" name="_telefono" value="<?php echo htmlspecialchars($_POST['_telefono'] ?? '') ?>">
-              </div>
-              <div class="campo">
-                <label>email</label>
-                <input type="email" name="_email" value="<?php echo htmlspecialchars($_POST['_email'] ?? '') ?>">
-              </div>
-            </div>
-
-            <div class="sezione">il tuo appuntamento</div>
-            <div class="campo">
-              <label>trattamento *</label>
-              <select name="servizio_id" required>
-                <option value="">scegli il trattamento</option>
-                <?php
-                $cat_corrente = '';
-                foreach ($servizi as $s):
-                  if ($s['categoria'] !== $cat_corrente) {
-                    if ($cat_corrente) echo '</optgroup>';
-                    echo '<optgroup label="' . htmlspecialchars($s['categoria']) . '">';
-                    $cat_corrente = $s['categoria'];
-                  }
-                ?>
-                  <option value="<?php echo $s['id'] ?>" <?php echo ($_POST['servizio_id'] ?? '') == $s['id'] ? 'selected' : '' ?>>
-                    <?php echo htmlspecialchars($s['nome']) ?> — <?php echo $s['durata_minuti'] ?>min — €<?php echo number_format($s['prezzo'], 2, ',', '.') ?>
-                  </option>
-                <?php endforeach;
-                if ($cat_corrente) echo '</optgroup>'; ?>
-              </select>
-            </div>
-            <div class="riga">
-              <div class="campo">
-                <label>data preferita *</label>
-                <input type="date" name="_data" value="<?php echo htmlspecialchars($_POST['_data'] ?? '') ?>" min="<?php echo date('Y-m-d') ?>" required>
-              </div>
-              <div class="campo">
-                <label>ora preferita</label>
-                <input type="time" name="_ora" value="<?php echo htmlspecialchars($_POST['_ora'] ?? '') ?>" min="08:00" max="20:00">
-                <small>confermeremo la disponibilità esatta</small>
-              </div>
-            </div>
-            <div class="campo">
-              <label>note aggiuntive</label>
-              <textarea name="note" rows="3" placeholder="allergie, preferenze, richieste particolari…"><?php echo htmlspecialchars($_POST['note'] ?? '') ?></textarea>
-            </div>
-
-            <button type="submit" class="btn-prenota">invia richiesta di prenotazione</button>
-          </form>
-        </div>
-      <?php endif ?>
-
-    <?php endif ?>
-  </div>
-
-  <footer>© <?php echo date('Y') ?> <?php echo "<strong>" . $nome_salone . "</strong>" ?></footer>
+    <footer>
+        Â© <?php echo date('Y') ?> <?php echo $nome_salone ?>
+    </footer>
 </body>
-
 </html>
+
+
+
